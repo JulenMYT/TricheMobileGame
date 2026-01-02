@@ -1,0 +1,103 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d6ae4c76a38b6148b878e70458b51d7, type: 3}
+  m_Name: Animaux
+  m_EditorClassIdentifier: 
+  categoryName: Animaux
+  words:
+  - chat
+  - chien
+  - lapin
+  - hamster
+  - furet
+  - perroquet
+  - poisson rouge
+  - tortue
+  - rat
+  - "l\xE9zard"
+  - vache
+  - mouton
+  - "ch\xE8vre"
+  - cochon
+  - poule
+  - dinde
+  - cheval
+  - "\xE2ne"
+  - canard
+  - oie
+  - dindon
+  - poney
+  - veau
+  - lion
+  - tigre
+  - "l\xE9opard"
+  - jaguar
+  - "gu\xE9pard"
+  - loup
+  - renard
+  - ours
+  - panda
+  - koala
+  - kangourou
+  - "z\xE8bre"
+  - "\xE9l\xE9phant"
+  - "rhinoc\xE9ros"
+  - girafe
+  - "hy\xE8ne"
+  - buffle
+  - cerf
+  - sanglier
+  - bison
+  - lynx
+  - puma
+  - requin
+  - dauphin
+  - baleine
+  - orque
+  - pieuvre
+  - "m\xE9duse"
+  - hippocampe
+  - crabe
+  - homard
+  - raie
+  - phoque
+  - truite
+  - saumon
+  - calmar
+  - aigle
+  - hibou
+  - chouette
+  - corbeau
+  - moineau
+  - colibri
+  - flamant rose
+  - pingouin
+  - autruche
+  - cygne
+  - "p\xE9lican"
+  - vautour
+  - perroquet
+  - toucan
+  - abeille
+  - fourmi
+  - papillon
+  - libellule
+  - "scarab\xE9e"
+  - "araign\xE9e"
+  - mille-pattes
+  - mouche
+  - sauterelle
+  - cafard
+  - escargot
+  - limace
+  - ver de terre
+  - mante religieuse

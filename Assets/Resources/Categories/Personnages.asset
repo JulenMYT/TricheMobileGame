@@ -1,0 +1,116 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d6ae4c76a38b6148b878e70458b51d7, type: 3}
+  m_Name: Personnages
+  m_EditorClassIdentifier: 
+  categoryName: Personnages
+  words:
+  - Harry Potter
+  - Hermione Granger
+  - Ron Weasley
+  - Albus Dumbledore
+  - Severus Rogue
+  - Voldemort
+  - Darth Vader
+  - Luke Skywalker
+  - Leia Organa
+  - Obi Wan Kenobi
+  - Yoda
+  - Han Solo
+  - Chewbacca
+  - Anakin Skywalker
+  - Frodo Sacquet
+  - Sam Gamegie
+  - Gandalf
+  - Aragorn
+  - Legolas
+  - Gimli
+  - Sauron
+  - Batman
+  - Bruce Wayne
+  - Le Joker
+  - Harley Quinn
+  - Superman
+  - Clark Kent
+  - Wonder Woman
+  - Flash
+  - Aquaman
+  - Spider Man
+  - Peter Parker
+  - Iron Man
+  - Tony Stark
+  - Captain America
+  - Steve Rogers
+  - Thor
+  - Loki
+  - Hulk
+  - Deadpool
+  - Wolverine
+  - Professor Xavier
+  - Magneto
+  - Pikachu
+  - Sacha Ketchum
+  - Mario
+  - Luigi
+  - Peach
+  - Bowser
+  - Link
+  - Zelda
+  - Ganondorf
+  - Donkey Kong
+  - Kirby
+  - Sonic
+  - Tails
+  - Dr Eggman
+  - Son Goku
+  - Vegeta
+  - Gohan
+  - Freezer
+  - Piccolo
+  - Naruto Uzumaki
+  - Sasuke Uchiha
+  - Sakura Haruno
+  - Kakashi Hatake
+  - Monkey D Luffy
+  - Roronoa Zoro
+  - Nami
+  - Sanji
+  - Usopp
+  - Tony Tony Chopper
+  - Shrek
+  - L Ane de Shrek
+  - Fiona
+  - Elsa
+  - Anna
+  - Olaf
+  - Buzz l Eclair
+  - Woody
+  - Jessie
+  - Simba
+  - Mufasa
+  - Aladdin
+  - Jasmine
+  - Le Genie
+  - Hercule
+  - Peter Pan
+  - Capitaine Crochet
+  - Alice
+  - Le Chapelier Fou
+  - La Reine de Coeur
+  - Geralt de Rive
+  - Yennefer
+  - Kratos
+  - Atreus
+  - Lara Croft
+  - Nathan Drake
+  - Ezio Auditore
+  - Altair

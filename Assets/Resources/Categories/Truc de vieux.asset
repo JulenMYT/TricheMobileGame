@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d6ae4c76a38b6148b878e70458b51d7, type: 3}
+  m_Name: Truc de vieux
+  m_EditorClassIdentifier: 
+  categoryName: Truc de vieux
+  words:
+  - Canne
+  - "Fauteuil \xE0 bascule"
+  - Chaussons
+  - "Gilet tricot\xE9"
+  - Plaid
+  - Lunettes sur le bout du nez
+  - "Horloge \xE0 carillon"
+  - "T\xE9l\xE9commande universelle"
+  - "Radio \xE0 lampes"
+  - "Bo\xEEte de m\xE9dicaments"
+  - Dentier
+  - Bain de pieds
+  - Pots de confiture maison
+  - Chapeaux de laine
+  - Chaise haute pour plantes
+  - "Tasse \xE0 th\xE9 avec soucoupe"
+  - Lecture du journal
+  - "Carnet de mots crois\xE9s"
+  - Photos de famille
+  - "S\xE9ries t\xE9l\xE9 des ann\xE9es 70"
+  - Tricot
+  - Coussin lombaire
+  - "Chaise ber\xE7ante"
+  - "T\xE9l\xE9phone filaire"
+  - Horloge murale
+  - Souvenirs de jeunesse

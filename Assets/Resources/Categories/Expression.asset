@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d6ae4c76a38b6148b878e70458b51d7, type: 3}
+  m_Name: Expression
+  m_EditorClassIdentifier: 
+  categoryName: Expression
+  words:
+  - "\xC0 bon entendeur"
+  - Appeler un chat un chat
+  - "Avoir la t\xEAte dans les nuages"
+  - Avoir un poil dans la main
+  - "Battre le fer tant qu\u2019il est chaud"
+  - Casser les pieds
+  - "Co\xFBter les yeux de la t\xEAte"
+  - Courir sur le haricot
+  - Donner sa langue au chat
+  - "Faire d\u2019une pierre deux coups"
+  - Faire la pluie et le beau temps
+  - Faire la sourde oreille
+  - "Jeter l\u2019\xE9ponge"
+  - Mettre les pieds dans le plat
+  - Prendre le taureau par les cornes
+  - "Se tenir \xE0 carreau"
+  - Tirer les vers du nez
+  - Tomber dans les pommes
+  - Tourner autour du pot
+  - Avoir la gueule de bois
+  - "\xCAtre sur son trente-et-un"
+  - Rentrer dans sa coquille
+  - Se mettre sur son trente-et-un
+  - "\xCAtre aux anges"
+  - "Avoir la t\xEAte sur les \xE9paules"
+  - "Se creuser la t\xEAte"
+  - Avoir le coup de foudre
+  - "\xCAtre dans de beaux draps"
+  - Donner un coup de main
+  - "Mettre la main \xE0 la p\xE2te"
+  - "Ne pas \xEAtre dans son assiette"
+  - "Avoir le c\u0153ur sur la main"
+  - Crier sur les toits
+  - Avoir la main verte
+  - "Faire la t\xEAte"
+  - Faire long feu
+  - "Se mettre dans la peau de quelqu\u2019un"
+  - "\xCAtre au bout du rouleau"
+  - "Couper l\u2019herbe sous le pied"
+  - "Avoir d\u2019autres chats \xE0 fouetter"
+  - "Mettre les bouch\xE9es doubles"
+  - Mettre son grain de sel
+  - Avoir la chair de poule
+  - Rire jaune
+  - Avoir la moutarde qui monte au nez
+  - "\xCAtre sur la corde raide"
+  - Mettre les voiles
+  - "Tirer son \xE9pingle du jeu"
+  - Donner sa langue au chat
+  - Avoir le nez creux
+  - Faire chou blanc

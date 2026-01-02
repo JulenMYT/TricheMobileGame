@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d6ae4c76a38b6148b878e70458b51d7, type: 3}
+  m_Name: Figure Historique
+  m_EditorClassIdentifier: 
+  categoryName: Figure Historique
+  words:
+  - "Napol\xE9on Bonaparte"
+  - "Cl\xE9op\xE2tre"
+  - "Jules C\xE9sar"
+  - George Washington
+  - Abraham Lincoln
+  - Alexandre le Grand
+  - Gengis Khan
+  - Marie Curie
+  - Albert Einstein
+  - Isaac Newton
+  - Leonardo da Vinci
+  - Michel-Ange
+  - "Galil\xE9e"
+  - Charles Darwin
+  - Winston Churchill
+  - Martin Luther King
+  - Nelson Mandela
+  - Mahatma Gandhi
+  - Thomas Edison
+  - Nikola Tesla
+  - Adolf Hitler
+  - Marie-Antoinette
+  - Elizabeth I
+  - Louis XIV
+  - Frida Kahlo
+  - Pablo Picasso
+  - Vincent van Gogh
+  - Mozart
+  - Ludwig van Beethoven
+  - Joan of Arc
+  - Socrate
+  - Platon
+  - Aristote
+  - Confucius
+  - Bouddha
+  - "J\xE9sus-Christ"
+  - Mahomet
+  - Marco Polo
+  - Christophe Colomb
+  - Ferdinand Magellan
+  - Vasco de Gama
+  - Ernest Hemingway
+  - William Shakespeare
+  - Charles Dickens
+  - Queen Victoria
+  - Emperor Meiji
+  - Simone de Beauvoir
+  - Karl Marx
+  - Sigmund Freud
+  - Anne Frank
+  - Che Guevara
+  - Malala Yousafzai

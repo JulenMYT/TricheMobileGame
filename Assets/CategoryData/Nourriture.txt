@@ -1,0 +1,61 @@
+pizza
+pasta
+spaghetti
+lasagne
+risotto
+gnocchi
+ravioli
+carbonara
+bolognese
+tiramisu
+panini
+bruschetta
+paella
+tapas
+gazpacho
+tortilla
+churros
+lomo saltado
+poutine
+tourtiere
+baguette
+croissant
+quiche
+ratatouille
+bouillabaisse
+coq au vin
+cassoulet
+fondue
+raclette
+burger
+hot dog
+pretzel
+fish and chips
+full english breakfast
+falafel
+hummus
+kebab
+moussaka
+couscous
+tajine
+naan
+tandoori
+curry
+samosa
+pho
+ramen
+sushi
+tempura
+okonomiyaki
+takoyaki
+spring roll
+mochi
+green tea ice cream
+pretzel
+crepe
+madeleine
+macaron
+cheesecake
+tarte tatin
+eclair
+profiterole

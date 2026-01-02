@@ -1,0 +1,93 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d6ae4c76a38b6148b878e70458b51d7, type: 3}
+  m_Name: Maths
+  m_EditorClassIdentifier: 
+  categoryName: "Math\xE9matiques"
+  words:
+  - Fonction
+  - Suite
+  - "S\xE9rie"
+  - "G\xE9om\xE9trie"
+  - "Alg\xE8bre"
+  - Analyse
+  - "Probabilit\xE9s"
+  - Topologie
+  - Equation
+  - Variable
+  - Inconnue
+  - Infini
+  - Tangente
+  - "Lin\xE9aire"
+  - Exponentielle
+  - Exponant
+  - Pi
+  - e
+  - Phi
+  - i
+  - Zero
+  - Multiplication
+  - Addition
+  - Soustraction
+  - Division
+  - Egal
+  - Racine
+  - Factorielle
+  - Pourcentage
+  - Cercle
+  - "Carr\xE9"
+  - Triangle
+  - Cube
+  - "Sph\xE8re"
+  - Hypercube
+  - Cone
+  - Cylindre
+  - Pyramide
+  - "Trigonom\xE9trie"
+  - Statistique
+  - "D\xE9riv\xE9e"
+  - "Int\xE9grale"
+  - Matrice
+  - Vecteur
+  - Fraction
+  - "Coordonn\xE9es"
+  - Angle
+  - Limite
+  - Bijection
+  - "Th\xE9or\xE8me de Pythagore"
+  - "Th\xE9or\xE8me de Thal\xE8s"
+  - "Th\xE9or\xE8me des valeurs intermediaires"
+  - "Th\xE9or\xE8me des accroissements finis"
+  - "Th\xE9or\xE8me de Bolzano-Weierstrass"
+  - "Th\xE9or\xE8me de B\xE9zout"
+  - "Th\xE9or\xE8me d'isomorphisme de Noether"
+  - "Th\xE9or\xE8me du point fixe de Banach"
+  - Loi des grands nombres
+  - Loi binomiale
+  - "Th\xE9or\xE8me de la boule chevelue"
+  - "Th\xE9or\xE8me des quatre couleurs"
+  - "Th\xE9or\xE8me du pancake"
+  - "Th\xE9or\xE8me du sandwich au jambon"
+  - Axiome de Zermelo-Fraenkel
+  - Axiome du choix
+  - "Th\xE9or\xE8me fondamental de l'alg\xE8bre"
+  - "Th\xE9or\xE8me fondamental de l'analyse"
+  - Paradoxe de Banach-Tarski
+  - Nombre de Graham
+  - Conjecture de Birch et Swinnerton-Dyer
+  - Conjecture de Syracuse
+  - Quadrature du Cercle
+  - "Conjecture de Poincar\xE9"
+  - Pavages
+  - "Hypoth\xE8se de Riemann"
+  - Hotel de Hilbert
+  - P=NP

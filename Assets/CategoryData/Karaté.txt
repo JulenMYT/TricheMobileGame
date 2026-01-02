@@ -1,0 +1,65 @@
+Mawashi-geri
+Gyaku-zuki
+Oi-zuki
+Mae-geri
+Yoko-geri
+Ushiro-geri
+Jodan-zuki
+Chudan-zuki
+Gedan-barai
+Age-uke
+Soto-uke
+Uchi-uke
+Shuto-uke
+Kamae
+Zenkutsu-dachi
+Kokutsu-dachi
+Kiba-dachi
+Shuto
+Empi
+Tobi-geri
+Kiai
+Dojo
+Sensei
+Karateka
+Dan
+Kyu
+Kumite
+Kata
+Kihon
+Tameshiwari
+Bunkai
+Heian Shodan
+Heian Nidan
+Heian Sandan
+Heian Yondan
+Heian Godan
+Tekki Shodan
+Tekki Nidan
+Tekki Sandan
+Bassai Dai
+Bassai Sho
+Kanku Dai
+Kanku Sho
+Jion
+Jitte
+Empi (kata)
+Gankaku
+Nijushiho
+Sochin
+Chinte
+Unsu
+Gojushiho Dai
+Gojushiho Sho
+Meikyo
+Jion
+Hangetsu
+Sanchin
+Seisan
+Shisochin
+Seipai
+Seienchin
+Sepai
+Saifa
+Seipai
+Shisochin

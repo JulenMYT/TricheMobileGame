@@ -1,0 +1,22 @@
+père
+mère
+frère | soeur
+grand-père |grand-mère
+oncle | tante
+cousin
+neveu | nièce
+gendre
+fille | fils
+enfant
+petit-enfant
+arrière-grand-mère
+parrain | marraine
+époux | épouse
+ami
+famille d’accueil
+tuteur
+descendant
+ancêtre
+héritier
+ex-conjoint
+beaux-parents

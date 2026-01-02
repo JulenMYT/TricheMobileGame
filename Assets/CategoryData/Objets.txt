@@ -1,0 +1,98 @@
+Clé
+Chaise
+Stylo
+Montre
+Lampe
+Livre
+Ordinateur
+Casque
+Téléphone
+Bouteille
+Sac
+Lunettes
+Parapluie
+Table
+Canapé
+Tasse
+Couteau
+Cadenas
+Vélo
+Chaussure
+Chapeau
+Bougie
+Tapis
+Porte-monnaie
+Radio
+Appareil photo
+Brosse
+Guitare
+Ballon
+Oreiller
+Cahier
+Écouteurs
+Horloge
+Valise
+Casserole
+Fourchette
+Cuillère
+Assiette
+Verre
+Écharpe
+Bottes
+Pelle
+Râteau
+Peigne
+Clavier
+Souris
+Écran
+Télécommande
+Baignoire
+Serviette
+Savon
+Dentifrice
+Brosse à dents
+Peinture
+Pinceau
+Carnet
+Marqueur
+Feutre
+Ruban
+Colle
+Ciseaux
+Sac à dos
+Tapis de yoga
+Coussin
+Rideau
+Ventilateur
+Radiateur
+Bouilloire
+Cafetière
+Mixeur
+Grille-pain
+Machine à laver
+Fer à repasser
+Casier
+Étagère
+Bureau
+Tabouret
+Chaise longue
+Lampadaire
+Horloge murale
+Tapis de sol
+Cloche
+Trompette
+Haut-parleur
+Microphone
+Ballon de football
+Raquette
+Skateboard
+Planche à voile
+Parasol
+Sac de couchage
+Tente
+Lanterne
+Gourde
+Boîte
+Cartable
+Équerre
+Compas

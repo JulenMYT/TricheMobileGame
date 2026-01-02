@@ -1,0 +1,94 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d6ae4c76a38b6148b878e70458b51d7, type: 3}
+  m_Name: Monument
+  m_EditorClassIdentifier: 
+  categoryName: Monument
+  words:
+  - "Pyramide de Kh\xE9ops"
+  - Jardin suspendu de Babylone
+  - "Statue de Zeus \xE0 Olympie"
+  - "Temple d\u2019Art\xE9mis \xE0 \xC9ph\xE8se"
+  - "Mausol\xE9e d\u2019Halicarnasse"
+  - Colosse de Rhodes
+  - "Phare d\u2019Alexandrie"
+  - "Christ R\xE9dempteur"
+  - Grande Muraille de Chine
+  - Machu Picchu
+  - Chichen Itza
+  - Petra
+  - "Colis\xE9e"
+  - Taj Mahal
+  - Stonehenge
+  - Mont Rushmore
+  - Sagrada Familia
+  - Tour Eiffel
+  - Big Ben
+  - Pyramide de Teotihuacan
+  - Angkor Wat
+  - "Acropole d\u2019Ath\xE8nes"
+  - Palais de Versailles
+  - Mont Saint-Michel
+  - Tower Bridge
+  - Louvre
+  - Hagia Sophia
+  - Alhambra
+  - Neuschwanstein
+  - Golden Gate Bridge
+  - Sydney Opera House
+  - Petronas Towers
+  - Burj Khalifa
+  - Mont Fuji
+  - Table Mountain
+  - Uluru
+  - Grand Canyon
+  - Victoria Falls
+  - Iguazu Falls
+  - Mount Everest
+  - Denali
+  - Ayers Rock
+  - Santorini
+  - Bora Bora
+  - "Moai de l\u2019\xEEle de P\xE2ques"
+  - Great Zimbabwe
+  - Mont-Saint-Michel
+  - Pont du Gard
+  - "Ch\xE2teau de Neuschwanstein"
+  - Pont Charles
+  - "Palais imp\xE9rial de Tokyo"
+  - "Ch\xE2teau de Prague"
+  - Pont de Brooklyn
+  - Pont du Golden Gate
+  - Mont Saint-Michel
+  - Mont Blanc
+  - Matterhorn
+  - Uluru
+  - "Parth\xE9non"
+  - "Colis\xE9e de Rome"
+  - "Arena de V\xE9rone"
+  - Kiyomizu-dera
+  - Fushimi Inari-taisha
+  - "Alcazar de S\xE9ville"
+  - Palais de Buckingham
+  - Capitole de Washington
+  - "Panth\xE9on de Rome"
+  - "Cath\xE9drale Notre-Dame de Paris"
+  - "Cath\xE9drale Saint-Basile"
+  - Basilique Saint-Pierre
+  - "Cath\xE9drale de Cologne"
+  - "Op\xE9ra de Sydney"
+  - "Mus\xE9e du Prado"
+  - "Mus\xE9e du Louvre"
+  - "Mus\xE9e d\u2019Orsay"
+  - "Mus\xE9e du Vatican"
+  - "Mus\xE9e Guggenheim"
+  - "Mus\xE9e M\xE9tropolitain de New York"

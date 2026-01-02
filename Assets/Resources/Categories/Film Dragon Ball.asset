@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d6ae4c76a38b6148b878e70458b51d7, type: 3}
+  m_Name: Film Dragon Ball
+  m_EditorClassIdentifier: 
+  categoryName: Film Dragon Ball
+  words:
+  - "La L\xE9gende de Shenron"
+  - "Le Ch\xE2teau du d\xE9mon"
+  - L'Aventure mystique
+  - "L'Arm\xE9e du Ruban Rouge"
+  - "\xC0 la poursuite de Garlic"
+  - Le Robot des glaces
+  - Le Combat fratricide
+  - La Menace de Namek
+  - La Revanche de Cooler
+  - "Cent Mille Guerriers de m\xE9tal"
+  - L'Offensive des cyborgs
+  - Broly le super guerrier
+  - Les Mercenaires de l'espace
+  - Rivaux dangereux
+  - Attaque Super Warrior !
+  - Fusions
+  - L'Attaque du dragon
+  - Battle of Gods
+  - "La R\xE9surrection de \u2018F\u2019"
+  - Broly
+  - Super Hero

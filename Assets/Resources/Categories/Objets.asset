@@ -1,0 +1,114 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d6ae4c76a38b6148b878e70458b51d7, type: 3}
+  m_Name: Objets
+  m_EditorClassIdentifier: 
+  categoryName: Objets
+  words:
+  - "Cl\xE9"
+  - Chaise
+  - Stylo
+  - Montre
+  - Lampe
+  - Livre
+  - Ordinateur
+  - Casque
+  - "T\xE9l\xE9phone"
+  - Bouteille
+  - Sac
+  - Lunettes
+  - Parapluie
+  - Table
+  - "Canap\xE9"
+  - Tasse
+  - Couteau
+  - Cadenas
+  - "V\xE9lo"
+  - Chaussure
+  - Chapeau
+  - Bougie
+  - Tapis
+  - Porte-monnaie
+  - Radio
+  - Appareil photo
+  - Brosse
+  - Guitare
+  - Ballon
+  - Oreiller
+  - Cahier
+  - "\xC9couteurs"
+  - Horloge
+  - Valise
+  - Casserole
+  - Fourchette
+  - "Cuill\xE8re"
+  - Assiette
+  - Verre
+  - "\xC9charpe"
+  - Bottes
+  - Pelle
+  - "R\xE2teau"
+  - Peigne
+  - Clavier
+  - Souris
+  - "\xC9cran"
+  - "T\xE9l\xE9commande"
+  - Baignoire
+  - Serviette
+  - Savon
+  - Dentifrice
+  - "Brosse \xE0 dents"
+  - Peinture
+  - Pinceau
+  - Carnet
+  - Marqueur
+  - Feutre
+  - Ruban
+  - Colle
+  - Ciseaux
+  - "Sac \xE0 dos"
+  - Tapis de yoga
+  - Coussin
+  - Rideau
+  - Ventilateur
+  - Radiateur
+  - Bouilloire
+  - "Cafeti\xE8re"
+  - Mixeur
+  - Grille-pain
+  - "Machine \xE0 laver"
+  - "Fer \xE0 repasser"
+  - Casier
+  - "\xC9tag\xE8re"
+  - Bureau
+  - Tabouret
+  - Chaise longue
+  - Lampadaire
+  - Horloge murale
+  - Tapis de sol
+  - Cloche
+  - Trompette
+  - Haut-parleur
+  - Microphone
+  - Ballon de football
+  - Raquette
+  - Skateboard
+  - "Planche \xE0 voile"
+  - Parasol
+  - Sac de couchage
+  - Tente
+  - Lanterne
+  - Gourde
+  - "Bo\xEEte"
+  - Cartable
+  - "\xC9querre"
+  - Compas
