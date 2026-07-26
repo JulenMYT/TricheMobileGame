@@ -14,6 +14,7 @@ public class StartGame : MonoBehaviour
 
     [SerializeField] private TMP_Text beginText;
     [SerializeField] private TMP_Text fakeText;
+    [SerializeField] private TMP_Text wordText;
 
     [SerializeField] private Button revealButton;
     [SerializeField] private Button nextButton;
@@ -40,10 +41,11 @@ public class StartGame : MonoBehaviour
         canvasGroup.blocksRaycasts = false;
     }
 
-    public void Setup(string begin, List<string> fakes)
+    public void Setup(string begin, List<string> fakes, string word)
     {
         beginText.text = begin;
         fakeText.text = string.Join(", ", fakes);
+        wordText.text = word;
 
         ShowClickImage();
         DisableNextButton();

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 9b117099d3c7c144896a351b5d2da460
+guid: 42674e502148fc041a0f63096bd4b9db
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8770551455293028098
-    second: fondSpy 1_0
+      213: -2191538184738317917
+    second: edit icon_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: fondSpy 1_0
+      name: edit icon_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 626
-        height: 500
+        x: 12
+        y: 12
+        width: 296
+        height: 296
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -127,8 +127,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 207b609841247b970800000000000000
-      internalID: 8770551455293028098
+      spriteID: 3a9d7fad1a71691e0800000000000000
+      internalID: -2191538184738317917
       vertices: []
       indices: 
       edges: []
@@ -143,8 +143,7 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable:
-      fondSpy 1_0: 8770551455293028098
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

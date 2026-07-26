@@ -167,7 +167,7 @@ public class Game : MonoBehaviour
     {
         int beginIndex = DrawBeginPlayer();
         List<string> fakes = fakeIndices.Select(i => players[i]).ToList();
-        startGame.Setup(players[beginIndex], fakes);
+        startGame.Setup(players[beginIndex], fakes, word);
 
         transition.FadeInOut();
 

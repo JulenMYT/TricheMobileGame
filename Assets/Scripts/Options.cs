@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,21 +15,23 @@ public class Options : MonoBehaviour
     [SerializeField] private Toggle shuffleToggle;
 
     [SerializeField] private Button handleCategoryButton;
-
     [SerializeField] private Button validateButton;
 
     public event Action OnValidateButton;
 
-    private void Awake()
-    {
-        validateButton.onClick.AddListener(() => OnValidateButton?.Invoke());
-        handleCategoryButton.onClick.AddListener(HandleCategory);
-        handleCategory.OnValidateButton += CloseCategory;
-    }
+    private const string TWO_FAKE_KEY = "Options_TwoFake";
+    private const string ALL_FAKE_KEY = "Options_AllFake";
+    private const string FAKE_START_KEY = "Options_FakeStart";
+    private const string SHUFFLE_KEY = "Options_Shuffle";
 
     private void Start()
     {
+        validateButton.onClick.AddListener(Validate);
+        handleCategoryButton.onClick.AddListener(HandleCategory);
+        handleCategory.OnValidateButton += CloseCategory;
         handleCategory.Hide();
+
+        LoadSettings();
     }
 
     public void Show()
@@ -70,6 +71,30 @@ public class Options : MonoBehaviour
     public List<string> GetAllowedCategories()
     {
         return CategorySettings.GetEnabledCategoryNames();
+    }
+
+    private void Validate()
+    {
+        SaveSettings();
+        OnValidateButton?.Invoke();
+    }
+
+    private void SaveSettings()
+    {
+        PlayerPrefs.SetInt(TWO_FAKE_KEY, twoFakeToggle.isOn ? 1 : 0);
+        PlayerPrefs.SetInt(ALL_FAKE_KEY, allFakeToggle.isOn ? 1 : 0);
+        PlayerPrefs.SetInt(FAKE_START_KEY, fakeStartToggle.isOn ? 1 : 0);
+        PlayerPrefs.SetInt(SHUFFLE_KEY, shuffleToggle.isOn ? 1 : 0);
+
+        PlayerPrefs.Save();
+    }
+
+    private void LoadSettings()
+    {
+        twoFakeToggle.isOn = PlayerPrefs.GetInt(TWO_FAKE_KEY, 0) == 1;
+        allFakeToggle.isOn = PlayerPrefs.GetInt(ALL_FAKE_KEY, 0) == 1;
+        fakeStartToggle.isOn = PlayerPrefs.GetInt(FAKE_START_KEY, 0) == 1;
+        shuffleToggle.isOn = PlayerPrefs.GetInt(SHUFFLE_KEY, 0) == 1;
     }
 
     private void HandleCategory()

@@ -1,9 +1,10 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public static class CategorySettings
 {
+    private const string CATEGORY_KEY_PREFIX = "Category_";
+
     private static HashSet<string> enabledCategories = new HashSet<string>();
 
     private static bool initialized = false;
@@ -13,8 +14,16 @@ public static class CategorySettings
         enabledCategories.Clear();
 
         var allCategories = WordsDatabase.GetAllCategories();
+
         foreach (var category in allCategories)
-            enabledCategories.Add(category.categoryName);
+        {
+            string key = CATEGORY_KEY_PREFIX + category.categoryName;
+
+            bool enabled = PlayerPrefs.GetInt(key, 1) == 1;
+
+            if (enabled)
+                enabledCategories.Add(category.categoryName);
+        }
 
         initialized = true;
     }
@@ -28,6 +37,13 @@ public static class CategorySettings
             enabledCategories.Add(categoryName);
         else
             enabledCategories.Remove(categoryName);
+
+        PlayerPrefs.SetInt(
+            CATEGORY_KEY_PREFIX + categoryName,
+            enabled ? 1 : 0
+        );
+
+        PlayerPrefs.Save();
     }
 
     public static bool IsCategoryEnabled(string categoryName)
