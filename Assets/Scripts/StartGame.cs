@@ -25,6 +25,7 @@ public class StartGame : MonoBehaviour
     {
         revealButton.onClick.AddListener(() => { Reveal(); });
         nextButton.onClick.AddListener(() => OnNextButtonClicked?.Invoke());
+        ShowClickImage();
     }
 
     public void Show()

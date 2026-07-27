@@ -299,6 +299,18 @@ public static class WordsDatabase
         Initialize();
     }
 
+    public static WordCategory GetWordCategory(string name)
+    {
+        foreach (WordCategory category in GetAllCategories())
+        {
+            if (category.categoryName.Equals(name))
+            {
+                return category;
+            }
+        }
+        return null;
+    }
+
     public class WordCategory
     {
         public string categoryName;

@@ -13,12 +13,14 @@ public class CategoryManager : MonoBehaviour
 
     [SerializeField] private Button validateButton;
     [SerializeField] private Button cancelButton;
+    [SerializeField] private Button importButton;
 
     [SerializeField] private WordBox wordBoxPrefab;
 
     private List<WordBox> wordBoxes = new();
 
     [SerializeField] private TMP_InputField categoryTitle;
+    [SerializeField] private TMP_InputField bulkInputField;
 
     [SerializeField] private AddBox addCategoryBoxPrefab;
     private AddBox addCategoryBox;
@@ -32,6 +34,7 @@ public class CategoryManager : MonoBehaviour
     {
         cancelButton.onClick.AddListener(()=>OnCancel?.Invoke());
         validateButton.onClick.AddListener(Validate);
+        importButton.onClick.AddListener(ImportWords);
     }
 
     public void Show()
@@ -61,6 +64,7 @@ public class CategoryManager : MonoBehaviour
         wordBoxes.Clear();
 
         categoryTitle.text = string.Empty;
+        bulkInputField.text = string.Empty;
 
         addCategoryBox = Instantiate(
             addCategoryBoxPrefab,
@@ -104,6 +108,39 @@ public class CategoryManager : MonoBehaviour
     {
         wordBoxes.Remove(wordBox);
         wordBox.OnDelete-= OnBoxDelete;
+    }
+
+    private void ImportWords()
+    {
+        string text = bulkInputField.text;
+
+        string[] splitWords = text.Split(
+            ',',
+            StringSplitOptions.RemoveEmptyEntries
+        );
+
+        foreach (string splitWord in splitWords)
+        {
+            string word = splitWord.Trim();
+
+            if (string.IsNullOrEmpty(word))
+                continue;
+
+            WordBox wordBox = Instantiate(
+                wordBoxPrefab,
+                contentParent
+            );
+
+            wordBoxes.Add(wordBox);
+
+            wordBox.OnDelete += OnBoxDelete;
+
+            wordBox.SetWord(word);
+        }
+
+        addCategoryBox.transform.SetAsLastSibling();
+
+        bulkInputField.text = string.Empty;
     }
 
     private void Validate()

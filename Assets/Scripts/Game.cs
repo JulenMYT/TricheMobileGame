@@ -19,6 +19,7 @@ public class Game : MonoBehaviour
 
     private string category;
     private string word;
+    private string fakeWord;
 
     private void Awake()
     {
@@ -44,7 +45,7 @@ public class Game : MonoBehaviour
         setupPlayer.ForceValidate();
         setupPlayer.DeleteEmptyBoxes();
 
-        if (setupPlayer.playerBoxes.Count < 2) return;
+        if (setupPlayer.playerBoxes.Count < 3) return;
 
         players.Clear();
         foreach (var box in setupPlayer.playerBoxes)
@@ -53,6 +54,15 @@ public class Game : MonoBehaviour
         DetermineFakes();
 
         (category, word) = WordsDatabase.GetRandomWord(CategorySettings.GetEnabledCategoryNames(), options.AllowShuffle());
+
+        if (options.UndercoverMode())
+        {
+            fakeWord = null;
+            while (fakeWord == null || fakeWord == word)
+            {
+                fakeWord = WordsDatabase.GetWordCategory(category).GetRandomWord();
+            }
+        }
 
         transition.FadeInOut();
 
@@ -73,7 +83,7 @@ public class Game : MonoBehaviour
     {
         fakeIndices = new List<int>();
 
-        if (options.AllowAllFake() && Random.Range(0, 100) < oddsAllFake)
+        if (options.AllowAllFake() && Random.Range(0, 100) < oddsAllFake && !options.UndercoverMode())
         {
             for (int i = 0; i < players.Count; i++)
                 fakeIndices.Add(i);
@@ -83,7 +93,7 @@ public class Game : MonoBehaviour
         int firstFake = DrawRandomPlayer();
         fakeIndices.Add(firstFake);
 
-        if (options.AllowSecondFake() && players.Count > 2)
+        if (options.AllowSecondFake() && players.Count > 3 && !options.UndercoverMode())
         {
             if (Random.Range(0, 100) < oddsSecondFake)
             {
@@ -137,6 +147,7 @@ public class Game : MonoBehaviour
         {
             setupPlayer.Show();
             startGame.Hide();
+            startGame.ShowClickImage();
             transition.OnFadeInComplete -= Callback;
         }
 
@@ -148,7 +159,17 @@ public class Game : MonoBehaviour
         if (currentIndex >= players.Count) return;
 
         bool isFake = fakeIndices.Contains(currentIndex);
-        string displayedWord = isFake ? "IMPOSTEUR" : word;
+        string displayedWord;
+        if (isFake)
+        {
+            if (options.UndercoverMode())
+                displayedWord = fakeWord;
+            else
+                displayedWord = "IMPOSTEUR";
+        }
+        else
+            displayedWord = word;
+
         string playerName = players[currentIndex];
         currentIndex++;
 
@@ -156,7 +177,7 @@ public class Game : MonoBehaviour
 
         void Callback()
         {
-            wordReveal.Setup(category, displayedWord, playerName, isFake);
+            wordReveal.Setup(category, displayedWord, playerName, isFake && !options.UndercoverMode());
             transition.OnFadeInComplete -= Callback;
         }
 

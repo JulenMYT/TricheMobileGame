@@ -13,6 +13,7 @@ public class Options : MonoBehaviour
     [SerializeField] private Toggle allFakeToggle;
     [SerializeField] private Toggle fakeStartToggle;
     [SerializeField] private Toggle shuffleToggle;
+    [SerializeField] private Toggle undercoverToggle;
 
     [SerializeField] private Button handleCategoryButton;
     [SerializeField] private Button validateButton;
@@ -23,6 +24,7 @@ public class Options : MonoBehaviour
     private const string ALL_FAKE_KEY = "Options_AllFake";
     private const string FAKE_START_KEY = "Options_FakeStart";
     private const string SHUFFLE_KEY = "Options_Shuffle";
+    private const string UNDERCOVER_KEY = "Options_Undercover";
 
     private void Start()
     {
@@ -68,6 +70,11 @@ public class Options : MonoBehaviour
         return shuffleToggle.isOn;
     }
 
+    public bool UndercoverMode()
+    {
+        return undercoverToggle.isOn;
+    }
+
     public List<string> GetAllowedCategories()
     {
         return CategorySettings.GetEnabledCategoryNames();
@@ -85,6 +92,7 @@ public class Options : MonoBehaviour
         PlayerPrefs.SetInt(ALL_FAKE_KEY, allFakeToggle.isOn ? 1 : 0);
         PlayerPrefs.SetInt(FAKE_START_KEY, fakeStartToggle.isOn ? 1 : 0);
         PlayerPrefs.SetInt(SHUFFLE_KEY, shuffleToggle.isOn ? 1 : 0);
+        PlayerPrefs.SetInt(UNDERCOVER_KEY, undercoverToggle.isOn ? 1 : 0);
 
         PlayerPrefs.Save();
     }
@@ -95,6 +103,7 @@ public class Options : MonoBehaviour
         allFakeToggle.isOn = PlayerPrefs.GetInt(ALL_FAKE_KEY, 0) == 1;
         fakeStartToggle.isOn = PlayerPrefs.GetInt(FAKE_START_KEY, 0) == 1;
         shuffleToggle.isOn = PlayerPrefs.GetInt(SHUFFLE_KEY, 0) == 1;
+        undercoverToggle.isOn = PlayerPrefs.GetInt(UNDERCOVER_KEY, 0) == 1;
     }
 
     private void HandleCategory()
