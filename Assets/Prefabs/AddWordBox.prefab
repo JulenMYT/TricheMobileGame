@@ -241,8 +241,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3498045402787429228}
-        m_TargetAssemblyTypeName: AddCategoryBox, Assembly-CSharp
+      - m_Target: {fileID: 5074152414329603893}
+        m_TargetAssemblyTypeName: AddWordBox, Assembly-CSharp
         m_MethodName: Add
         m_Mode: 1
         m_Arguments:
@@ -263,9 +263,9 @@ GameObject:
   m_Component:
   - component: {fileID: 950049961447601852}
   - component: {fileID: 987196477921208018}
-  - component: {fileID: 3498045402787429228}
+  - component: {fileID: 5074152414329603893}
   m_Layer: 5
-  m_Name: AddCategoryBox
+  m_Name: AddWordBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -299,7 +299,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8079310774293566591}
   m_CullTransparentMesh: 1
---- !u!114 &3498045402787429228
+--- !u!114 &5074152414329603893
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -308,6 +308,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 8079310774293566591}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f5bff836ed951ac409db88cb0566fbda, type: 3}
+  m_Script: {fileID: 11500000, guid: cf1f8f579a5502a449df8335344a5c53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

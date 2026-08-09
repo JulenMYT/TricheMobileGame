@@ -4,100 +4,83 @@ using UnityEngine;
 
 public static class WordsDatabase
 {
-    private static bool initialized = false;
-
-    private static List<WordCategory> categories;
-    private static Dictionary<string, WordCategory> categoriesDict;
-
     private const string PATH = "Categories";
 
-    private static List<WordCategory> shuffledCategories = new List<WordCategory>();
-    private static int shuffledIndex = 0;
+    private static bool initialized;
 
-    private static Dictionary<string, List<WordCategory>> allowedShuffles = new Dictionary<string, List<WordCategory>>();
-    private static Dictionary<string, int> allowedIndices = new Dictionary<string, int>();
+    private static readonly List<WordCategory> categories = new();
+    private static readonly Dictionary<string, WordCategory> categoriesByName = new();
+
+    private static List<WordCategory> shuffledCategories = new();
+    private static int shuffledIndex;
 
     public static void Initialize()
     {
         if (initialized)
             return;
 
-        categories = new List<WordCategory>();
-        categoriesDict = new Dictionary<string, WordCategory>();
+        categories.Clear();
+        categoriesByName.Clear();
 
         LoadBaseCategories();
         LoadCustomCategories();
+
+        ResetShuffle();
 
         initialized = true;
     }
 
     private static void LoadBaseCategories()
     {
-        TextAsset[] textAssets = Resources.LoadAll<TextAsset>(PATH);
+        TextAsset[] assets = Resources.LoadAll<TextAsset>(PATH);
 
-        foreach (TextAsset textAsset in textAssets)
+        foreach (TextAsset asset in assets)
         {
-            List<string> words = ParseWords(textAsset.text);
+            List<string> words = ParseWords(asset.text);
 
             if (words.Count == 0)
                 continue;
 
-            WordCategory category = new WordCategory(
-                textAsset.name,
+            AddCategory(new WordCategory(
+                asset.name,
                 words,
                 false
-            );
-
-            AddCategory(category);
+            ));
         }
     }
 
     private static void LoadCustomCategories()
     {
-        string categoriesPath = Path.Combine(
+        string path = Path.Combine(
             Application.persistentDataPath,
             PATH
         );
 
-        if (!Directory.Exists(categoriesPath))
+        if (!Directory.Exists(path))
             return;
 
-        string[] files = Directory.GetFiles(
-            categoriesPath,
-            "*.txt"
-        );
-
-        foreach (string file in files)
+        foreach (string file in Directory.GetFiles(path, "*.txt"))
         {
-            string text = File.ReadAllText(file);
-
-            List<string> words = ParseWords(text);
+            List<string> words = ParseWords(File.ReadAllText(file));
 
             if (words.Count == 0)
                 continue;
 
-            string categoryName = Path.GetFileNameWithoutExtension(file);
-
-            WordCategory category = new WordCategory(
-                categoryName,
+            AddCategory(new WordCategory(
+                Path.GetFileNameWithoutExtension(file),
                 words,
                 true
-            );
-
-            AddCategory(category);
+            ));
         }
     }
 
     private static List<string> ParseWords(string text)
     {
-        string[] lines = text.Split(
+        List<string> words = new();
+
+        foreach (string line in text.Split(
             new[] { '\r', '\n' },
-            System.StringSplitOptions.RemoveEmptyEntries
-        );
-
-        List<string> words = new List<string>();
-
-        foreach (string line in lines)
+            System.StringSplitOptions.RemoveEmptyEntries))
         {
             string word = line.Trim();
 
@@ -110,96 +93,57 @@ public static class WordsDatabase
 
     private static void AddCategory(WordCategory category)
     {
-        if (categoriesDict.ContainsKey(category.categoryName))
+        if (categoriesByName.ContainsKey(category.Name))
             return;
 
         categories.Add(category);
-        categoriesDict.Add(
-            category.categoryName,
-            category
-        );
+        categoriesByName.Add(category.Name, category);
     }
 
-    private static void ShuffleList(List<WordCategory> list)
+    private static void ResetShuffle()
+    {
+        shuffledCategories = new List<WordCategory>(categories);
+
+        Shuffle(shuffledCategories);
+
+        shuffledIndex = 0;
+    }
+
+    private static void Shuffle(List<WordCategory> list)
     {
         for (int i = 0; i < list.Count; i++)
         {
-            int j = Random.Range(i, list.Count);
+            int index = Random.Range(i, list.Count);
 
-            WordCategory tmp = list[i];
-            list[i] = list[j];
-            list[j] = tmp;
+            (list[i], list[index]) = (list[index], list[i]);
         }
     }
 
-    private static WordCategory GetNextShuffled()
+    private static WordCategory GetNextCategory()
     {
-        if (shuffledCategories.Count != categories.Count)
-        {
-            shuffledCategories = new List<WordCategory>(categories);
-            ShuffleList(shuffledCategories);
-            shuffledIndex = 0;
-        }
+        if (shuffledCategories.Count == 0)
+            return null;
 
         if (shuffledIndex >= shuffledCategories.Count)
-        {
-            ShuffleList(shuffledCategories);
-            shuffledIndex = 0;
-        }
+            ResetShuffle();
 
         return shuffledCategories[shuffledIndex++];
     }
 
-    private static WordCategory GetNextShuffled(
-        List<WordCategory> list,
-        ref int index
-    )
-    {
-        if (list.Count == 0)
-            return null;
-
-        if (index >= list.Count)
-        {
-            ShuffleList(list);
-            index = 0;
-        }
-
-        return list[index++];
-    }
-
-    public static (string category, string word) GetRandomWord(
-        bool shuffle = true
-    )
+    public static (string category, string word) GetRandomWord(bool shuffle = true)
     {
         if (!initialized)
             Initialize();
 
-        if (categories == null || categories.Count == 0)
+        if (categories.Count == 0)
             return ("None", "???");
 
-        if (shuffle)
-        {
-            WordCategory category = GetNextShuffled();
+        WordCategory category = shuffle ? GetNextCategory() : categories[Random.Range(0, categories.Count)];
 
-            return (
-                category.categoryName,
-                category.GetRandomWord()
-            );
-        }
-
-        WordCategory randomCategory =
-            categories[Random.Range(0, categories.Count)];
-
-        return (
-            randomCategory.categoryName,
-            randomCategory.GetRandomWord()
-        );
+        return (category.Name, category.GetRandomWord());
     }
 
-    public static (string category, string word) GetRandomWord(
-        List<string> allowedCategories,
-        bool shuffle = true
-    )
+    public static (string category, string word) GetRandomWord(List<string> allowedCategories, bool shuffle = true)
     {
         if (!initialized)
             Initialize();
@@ -207,72 +151,60 @@ public static class WordsDatabase
         if (allowedCategories == null || allowedCategories.Count == 0)
             return GetRandomWord(shuffle);
 
-        if (!shuffle)
+        List<WordCategory> validCategories = new();
+
+        foreach (string name in allowedCategories)
         {
-            List<WordCategory> valid = new List<WordCategory>();
-
-            foreach (string name in allowedCategories)
-            {
-                if (categoriesDict.TryGetValue(
-                    name,
-                    out WordCategory category
-                ))
-                {
-                    valid.Add(category);
-                }
-            }
-
-            if (valid.Count == 0)
-                return GetRandomWord(shuffle);
-
-            WordCategory selected =
-                valid[Random.Range(0, valid.Count)];
-
-            return (
-                selected.categoryName,
-                selected.GetRandomWord()
-            );
+            if (categoriesByName.TryGetValue(name, out WordCategory category))
+                validCategories.Add(category);
         }
 
-        string key = string.Join("|", allowedCategories);
+        if (validCategories.Count == 0)
+            return GetRandomWord(shuffle);
 
-        if (!allowedShuffles.ContainsKey(key))
+        WordCategory selected;
+
+        if (shuffle)
         {
-            List<WordCategory> valid = new List<WordCategory>();
-
-            foreach (string name in allowedCategories)
-            {
-                if (categoriesDict.TryGetValue(
-                    name,
-                    out WordCategory category
-                ))
-                {
-                    valid.Add(category);
-                }
-            }
-
-            if (valid.Count == 0)
-                return GetRandomWord(shuffle);
-
-            ShuffleList(valid);
-
-            allowedShuffles[key] = valid;
-            allowedIndices[key] = 0;
+            selected = GetShuffledAllowedCategory(allowedCategories, validCategories);
+        }
+        else
+        {
+            selected = validCategories[
+                Random.Range(0, validCategories.Count)
+            ];
         }
 
-        List<WordCategory> list = allowedShuffles[key];
+        return (selected.Name, selected.GetRandomWord());
+    }
 
-        int index = allowedIndices[key];
+    private static readonly Dictionary<string, List<WordCategory>> shuffledAllowedCategories = new();
+    private static readonly Dictionary<string, int> shuffledAllowedIndices = new();
 
-        WordCategory categoryShuffled =
-            GetNextShuffled(list, ref index);
+    private static WordCategory GetShuffledAllowedCategory(List<string> allowedNames, List<WordCategory> validCategories)
+    {
+        string key = string.Join("|", allowedNames);
 
-        allowedIndices[key] = index;
+        if (!shuffledAllowedCategories.TryGetValue(key, out List<WordCategory> shuffled))
+        {
+            shuffled = new List<WordCategory>(validCategories);
+            Shuffle(shuffled);
 
-        return (
-            categoryShuffled.categoryName,
-            categoryShuffled.GetRandomWord()
-        );
+            shuffledAllowedCategories[key] = shuffled;
+            shuffledAllowedIndices[key] = 0;
+        }
+
+        int index = shuffledAllowedIndices[key];
+
+        if (index >= shuffled.Count)
+        {
+            Shuffle(shuffled);
+            index = 0;
+        }
+
+        shuffledAllowedIndices[key] = index + 1;
+
+        return shuffled[index];
     }
 
     public static List<WordCategory> GetAllCategories()
@@ -283,59 +215,54 @@ public static class WordsDatabase
         return categories;
     }
 
+    public static WordCategory GetWordCategory(string name)
+    {
+        if (!initialized)
+            Initialize();
+
+        categoriesByName.TryGetValue(name, out WordCategory category);
+
+        return category;
+    }
+
     public static void Reload()
     {
         initialized = false;
 
-        categories = null;
-        categoriesDict = null;
+        categories.Clear();
+        categoriesByName.Clear();
 
-        shuffledCategories = new List<WordCategory>();
-        shuffledIndex = 0;
-
-        allowedShuffles.Clear();
-        allowedIndices.Clear();
+        shuffledCategories.Clear();
+        shuffledAllowedCategories.Clear();
+        shuffledAllowedIndices.Clear();
 
         Initialize();
     }
 
-    public static WordCategory GetWordCategory(string name)
-    {
-        foreach (WordCategory category in GetAllCategories())
-        {
-            if (category.categoryName.Equals(name))
-            {
-                return category;
-            }
-        }
-        return null;
-    }
-
     public class WordCategory
     {
-        public string categoryName;
-        public List<string> words;
+        public string Name { get; }
+        public List<string> Words { get; }
         public bool IsCustom { get; }
 
         public WordCategory(
-            string categoryName,
+            string name,
             List<string> words,
-            bool isCustom
-        )
+            bool isCustom)
         {
-            this.categoryName = categoryName;
-            this.words = words;
+            Name = name;
+            Words = words;
             IsCustom = isCustom;
         }
 
         public string GetRandomWord()
         {
-            return words[Random.Range(0, words.Count)];
+            return Words[Random.Range(0, Words.Count)];
         }
 
         public int GetWordCount()
         {
-            return words.Count;
+            return Words.Count;
         }
     }
 }

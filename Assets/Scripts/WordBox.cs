@@ -1,26 +1,20 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class WordBox : MonoBehaviour
 {
     [SerializeField] private TMP_InputField wordField;
-    [SerializeField] private Button deleteButton;
 
-    public event Action<WordBox> OnDelete;
+    private CategoryEditor categoryEditor;
 
-    private void Start()
+    public void SetHandler(CategoryEditor handler)
     {
-        deleteButton.onClick.AddListener(Delete);
+        categoryEditor = handler;
     }
 
-    private void Delete()
+    public void Delete()
     {
-        OnDelete?.Invoke(this);
-        Destroy(gameObject);
+        categoryEditor.DeleteBox(this);
     }
 
     public string GetWord()

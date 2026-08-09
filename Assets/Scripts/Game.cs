@@ -1,217 +1,226 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class Game : MonoBehaviour
 {
+    [SerializeField] private ScreenFader screenFader;
+
     [SerializeField] private SetupPlayer setupPlayer;
     [SerializeField] private WordReveal wordReveal;
     [SerializeField] private StartGame startGame;
     [SerializeField] private Options options;
-    [SerializeField] private Transition transition;
 
     [SerializeField] private int oddsSecondFake;
     [SerializeField] private int oddsAllFake;
 
-    private List<string> players;
-    private List<int> fakeIndices;
-    private int currentIndex;
+    private List<string> players = new();
+    private List<int> fakePlayerIndices = new();
+
+    private int currentPlayerIndex;
 
     private string category;
     private string word;
     private string fakeWord;
 
-    private void Awake()
-    {
-        players = new List<string>();
-        setupPlayer.OnPlayClicked += Play;
-        setupPlayer.OnOptionsClicked += OpenOptions;
-        wordReveal.OnNextButtonClicked += OnNext;
-        startGame.OnNextButtonClicked += OnEnd;
-        options.OnValidateButton += CloseOptions;
-    }
+    private MenuManager menuManager;
 
     private void Start()
     {
-        setupPlayer.Show();
-        wordReveal.Hide();
-        startGame.Hide();
-        options.Hide();
-        transition.Hide();
+        menuManager = ServiceLocator.Get<MenuManager>();
     }
 
-    private void Play()
+    public void StartGame()
     {
-        setupPlayer.ForceValidate();
-        setupPlayer.DeleteEmptyBoxes();
+        if (!setupPlayer.IsValid())
+            return;
 
-        if (setupPlayer.playerBoxes.Count < 3) return;
+        ResetGame();
 
+        StartCoroutine(StartGameSequence());
+    }
+
+    private void ResetGame()
+    {
         players.Clear();
-        foreach (var box in setupPlayer.playerBoxes)
-            players.Add(box.GetName());
+        fakePlayerIndices.Clear();
 
-        DetermineFakes();
+        currentPlayerIndex = 0;
 
-        (category, word) = WordsDatabase.GetRandomWord(CategorySettings.GetEnabledCategoryNames(), options.AllowShuffle());
-
-        if (options.UndercoverMode())
-        {
-            fakeWord = null;
-            while (fakeWord == null || fakeWord == word)
-            {
-                fakeWord = WordsDatabase.GetWordCategory(category).GetRandomWord();
-            }
-        }
-
-        transition.FadeInOut();
-
-        void Callback()
-        {
-            setupPlayer.Hide();
-            wordReveal.Show();
-            transition.OnFadeInComplete -= Callback;
-        }
-
-        transition.OnFadeInComplete += Callback;
-
-        currentIndex = 0;
-        NextPlayer();
+        category = null;
+        word = null;
+        fakeWord = null;
     }
 
-    private void DetermineFakes()
+    private IEnumerator StartGameSequence()
     {
-        fakeIndices = new List<int>();
+        yield return screenFader.Fade(0f, 1f, 0.5f);
 
-        if (options.AllowAllFake() && Random.Range(0, 100) < oddsAllFake && !options.UndercoverMode())
+        InitializeGame();
+
+        menuManager.ToggleMenu(wordReveal);
+
+        SetupNextPlayer();
+
+        yield return screenFader.Fade(1f, 0f, 0.5f);
+    }
+
+    private void InitializeGame()
+    {
+        players = setupPlayer.GetPlayers();
+
+        AssignWords();
+        AssignFakes();
+    }
+
+    private void AssignWords()
+    {
+        (category, word) = WordsDatabase.GetRandomWord(
+            CategorySettings.GetEnabledCategoryNames(),
+            options.AllowShuffle()
+        );
+
+        fakeWord = null;
+
+        if (!options.IsUndercoverMode())
+            return;
+
+        do
+        {
+            fakeWord = WordsDatabase
+                .GetWordCategory(category)
+                .GetRandomWord();
+
+        } while (fakeWord == word);
+    }
+
+    private void AssignFakes()
+    {
+        fakePlayerIndices.Clear();
+
+        if (ShouldMakeAllPlayersFake())
         {
             for (int i = 0; i < players.Count; i++)
-                fakeIndices.Add(i);
+                fakePlayerIndices.Add(i);
+
             return;
         }
 
-        int firstFake = DrawRandomPlayer();
-        fakeIndices.Add(firstFake);
+        AddRandomFake();
 
-        if (options.AllowSecondFake() && players.Count > 3 && !options.UndercoverMode())
+        if (ShouldAddSecondFake())
+            AddRandomFake();
+    }
+
+    private bool ShouldMakeAllPlayersFake()
+    {
+        return options.AllowAllFake()
+            && !options.IsUndercoverMode()
+            && Random.Range(0, 100) < oddsAllFake;
+    }
+
+    private bool ShouldAddSecondFake()
+    {
+        return options.AllowSecondFake()
+            && !options.IsUndercoverMode()
+            && players.Count > 3
+            && Random.Range(0, 100) < oddsSecondFake;
+    }
+
+    private void AddRandomFake()
+    {
+        int fakeIndex;
+
+        do
         {
-            if (Random.Range(0, 100) < oddsSecondFake)
-            {
-                int secondFake;
-                do
-                {
-                    secondFake = DrawRandomPlayer();
-                } while (fakeIndices.Contains(secondFake));
-
-                fakeIndices.Add(secondFake);
-            }
+            fakeIndex = Random.Range(0, players.Count);
         }
+        while (fakePlayerIndices.Contains(fakeIndex));
+
+        fakePlayerIndices.Add(fakeIndex);
     }
 
-    private int DrawRandomPlayer()
+    public void RevealNextPlayer()
     {
-        if (players.Count == 0)
-            throw new System.InvalidOperationException("No players available for random draw.");
-
-        return Random.Range(0, players.Count);
+        StartCoroutine(RevealNextPlayerTransition());
     }
 
-    private int DrawBeginPlayer()
+    private IEnumerator RevealNextPlayerTransition()
     {
-        if (players.Count == 0)
-            throw new System.InvalidOperationException("No players available to start.");
+        yield return screenFader.Fade(0f, 1f, 0.5f);
 
+        if (currentPlayerIndex >= players.Count)
+        {
+            ShowStartScreen();
+        }
+        else
+        {
+            SetupNextPlayer();
+        }
+
+        yield return screenFader.Fade(1f, 0f, 0.5f);
+    }
+
+    private void SetupNextPlayer()
+    {
+        bool isFake = fakePlayerIndices.Contains(currentPlayerIndex);
+
+        wordReveal.Setup(
+            category,
+            GetPlayerWord(isFake),
+            players[currentPlayerIndex],
+            isFake && !options.IsUndercoverMode()
+        );
+
+        currentPlayerIndex++;
+    }
+
+    private string GetPlayerWord(bool isFake)
+    {
+        if (!isFake)
+            return word;
+
+        if (options.IsUndercoverMode())
+            return fakeWord;
+
+        return "IMPOSTEUR";
+    }
+
+    private void ShowStartScreen()
+    {
+        int startingPlayerIndex = SelectStartingPlayer();
+
+        List<string> fakePlayers = fakePlayerIndices
+            .Select(index => players[index])
+            .ToList();
+
+        startGame.Setup(
+            players[startingPlayerIndex],
+            fakePlayers,
+            word
+        );
+
+        menuManager.ToggleMenu(startGame);
+    }
+
+    private int SelectStartingPlayer()
+    {
         if (options.AllowFakeStart())
             return Random.Range(0, players.Count);
 
-        var nonFakeIndices = Enumerable.Range(0, players.Count)
-            .Where(i => !fakeIndices.Contains(i))
+        List<int> validIndices = Enumerable
+            .Range(0, players.Count)
+            .Where(index => !fakePlayerIndices.Contains(index))
             .ToList();
 
-        return nonFakeIndices.Count > 0 ? nonFakeIndices[Random.Range(0, nonFakeIndices.Count)] : Random.Range(0, players.Count);
+        return validIndices.Count > 0
+            ? validIndices[Random.Range(0, validIndices.Count)]
+            : Random.Range(0, players.Count);
     }
 
-    private void OnNext()
+    public void EndGame()
     {
-        if (currentIndex < players.Count)
-            NextPlayer();
-        else
-            StartGame();
-    }
-
-    private void OnEnd()
-    {
-        transition.FadeInOut();
-
-        void Callback()
-        {
-            setupPlayer.Show();
-            startGame.Hide();
-            startGame.ShowClickImage();
-            transition.OnFadeInComplete -= Callback;
-        }
-
-        transition.OnFadeInComplete += Callback;
-    }
-
-    private void NextPlayer()
-    {
-        if (currentIndex >= players.Count) return;
-
-        bool isFake = fakeIndices.Contains(currentIndex);
-        string displayedWord;
-        if (isFake)
-        {
-            if (options.UndercoverMode())
-                displayedWord = fakeWord;
-            else
-                displayedWord = "IMPOSTEUR";
-        }
-        else
-            displayedWord = word;
-
-        string playerName = players[currentIndex];
-        currentIndex++;
-
-        transition.FadeInOut();
-
-        void Callback()
-        {
-            wordReveal.Setup(category, displayedWord, playerName, isFake && !options.UndercoverMode());
-            transition.OnFadeInComplete -= Callback;
-        }
-
-        transition.OnFadeInComplete += Callback;
-    }
-
-    private void StartGame()
-    {
-        int beginIndex = DrawBeginPlayer();
-        List<string> fakes = fakeIndices.Select(i => players[i]).ToList();
-        startGame.Setup(players[beginIndex], fakes, word);
-
-        transition.FadeInOut();
-
-        void Callback()
-        {
-            wordReveal.Hide();
-            startGame.Show();
-
-            transition.OnFadeInComplete -= Callback;
-        }
-
-        transition.OnFadeInComplete += Callback;
-    }
-
-    private void OpenOptions()
-    {
-        options.Show();
-        setupPlayer.Hide();
-    }
-
-    private void CloseOptions()
-    {
-        options.Hide();
-        setupPlayer.Show();
+        menuManager.ToggleMenu(setupPlayer);
     }
 }

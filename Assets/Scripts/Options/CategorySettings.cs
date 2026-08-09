@@ -17,12 +17,12 @@ public static class CategorySettings
 
         foreach (var category in allCategories)
         {
-            string key = CATEGORY_KEY_PREFIX + category.categoryName;
+            string key = CATEGORY_KEY_PREFIX + category.Name;
 
             bool enabled = PlayerPrefs.GetInt(key, 1) == 1;
 
             if (enabled)
-                enabledCategories.Add(category.categoryName);
+                enabledCategories.Add(category.Name);
         }
 
         initialized = true;

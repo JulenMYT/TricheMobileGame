@@ -1,46 +1,17 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class StartGame : MonoBehaviour
+public class StartGame : MenuPanel
 {
-    [SerializeField] private CanvasGroup canvasGroup;
-
     [SerializeField] private CanvasGroup revealCanvasGroup;
-    [SerializeField] private float fadeDuration = 1f;
 
     [SerializeField] private TMP_Text beginText;
     [SerializeField] private TMP_Text fakeText;
     [SerializeField] private TMP_Text wordText;
 
-    [SerializeField] private Button revealButton;
-    [SerializeField] private Button nextButton;
-
-    public event Action OnNextButtonClicked;
-
-    private void Awake()
-    {
-        revealButton.onClick.AddListener(() => { Reveal(); });
-        nextButton.onClick.AddListener(() => OnNextButtonClicked?.Invoke());
-        ShowClickImage();
-    }
-
-    public void Show()
-    {
-        canvasGroup.alpha = 1;
-        canvasGroup.interactable = true;
-        canvasGroup.blocksRaycasts = true;
-    }
-
-    public void Hide()
-    {
-        canvasGroup.alpha = 0;
-        canvasGroup.interactable = false;
-        canvasGroup.blocksRaycasts = false;
-    }
+    [SerializeField] private GameObject nextButton;
 
     public void Setup(string begin, List<string> fakes, string word)
     {
@@ -48,59 +19,42 @@ public class StartGame : MonoBehaviour
         fakeText.text = string.Join(", ", fakes);
         wordText.text = word;
 
-        ShowClickImage();
-        DisableNextButton();
-    }
-
-    public void ShowClickImage()
-    {
         revealCanvasGroup.alpha = 1;
         revealCanvasGroup.interactable = true;
         revealCanvasGroup.blocksRaycasts = true;
+
+        nextButton.SetActive(false);
     }
 
-    public void HideClickImage()
+    public void Reveal()
     {
-        revealCanvasGroup.alpha = 0;
+        StartCoroutine(RevealRoutine());
+    }
+
+    private IEnumerator RevealRoutine()
+    {
         revealCanvasGroup.interactable = false;
-        revealCanvasGroup.blocksRaycasts = false;
+
+        yield return FadeCanvasGroup(revealCanvasGroup, 0, 0.5f);
+
+        nextButton.SetActive(true);
     }
 
-    private void EnableNextButton()
-    {
-        nextButton.gameObject.SetActive(true);
-    }
-
-    private void DisableNextButton()
-    {
-        nextButton?.gameObject.SetActive(false);
-    }
-
-    private void Reveal()
-    {
-        void Callback()
-        {
-            HideClickImage();
-            EnableNextButton();
-        }
-
-        StartCoroutine(FadeCanvasGroup(revealCanvasGroup, 0, fadeDuration, Callback));
-        revealCanvasGroup.interactable = false;
-    }
-
-    private IEnumerator FadeCanvasGroup(CanvasGroup group, float targetAlpha, float duration, Action onComplete = null)
+    private IEnumerator FadeCanvasGroup(CanvasGroup group, float targetAlpha, float duration)
     {
         float startAlpha = group.alpha;
-        float time = 0;
+        float time = 0f;
 
         while (time < duration)
         {
-            time += Time.deltaTime;
+            time += Time.unscaledDeltaTime;
             group.alpha = Mathf.Lerp(startAlpha, targetAlpha, time / duration);
+
             yield return null;
         }
 
         group.alpha = targetAlpha;
-        onComplete?.Invoke();
+        group.interactable = false;
+        group.blocksRaycasts = false;
     }
 }
