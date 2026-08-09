@@ -3,8 +3,13 @@ using UnityEngine;
 
 public class SetupPlayer : MenuPanel
 {
+    private const string EmptyNameMessage = "Un joueur n'a pas de nom !";
+    private const string DupeNameMessage = "Les joueurs doivent avoir des noms différents !";
+    private const string LowPlayerMessage = "Il faut au moins 3 joueurs !";
+
     [SerializeField] private RectTransform gridParent;
     [SerializeField] private PlayerBox playerBoxPrefab;
+    [SerializeField] private ErrorPopup errorPopupPrefab;
 
     public List<PlayerBox> playerBoxes { get; private set; } = new();
 
@@ -26,7 +31,10 @@ public class SetupPlayer : MenuPanel
     public bool IsValid()
     {
         if (playerBoxes.Count < 3)
+        {
+            ShowError(LowPlayerMessage);
             return false;
+        }
 
         HashSet<string> names = new();
 
@@ -35,10 +43,16 @@ public class SetupPlayer : MenuPanel
             string name = player.GetName().Trim();
 
             if (string.IsNullOrEmpty(name))
+            {
+                ShowError(EmptyNameMessage);
                 return false;
+            }
 
             if (!names.Add(name.ToLowerInvariant()))
+            {
+                ShowError(DupeNameMessage);
                 return false;
+            }
         }
 
         return true;
@@ -52,5 +66,11 @@ public class SetupPlayer : MenuPanel
             players.Add(player.GetName().Trim());
 
         return players;
+    }
+
+    private void ShowError(string message)
+    {
+        ErrorPopup popup = Instantiate(errorPopupPrefab);
+        popup.Setup(message);
     }
 }

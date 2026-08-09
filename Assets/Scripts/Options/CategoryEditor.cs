@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class CategoryEditor : MenuPanel
 {
+    private const string EmptyTitleMessage = "La catégorie doit avoir un nom !";
+    private const string EmptyWordsMessage = "La catégorie doit contenir au moins un mot !";
+
     [SerializeField] private CategoryHandler categoryHandler;
 
     [SerializeField] private Transform contentParent;
@@ -14,6 +17,7 @@ public class CategoryEditor : MenuPanel
     [SerializeField] private TMP_InputField bulkInputField;
 
     [SerializeField] private AddWordBox addWordBoxPrefab;
+    [SerializeField] private ErrorPopup errorPopupPrefab;
 
     private readonly List<WordBox> wordBoxes = new();
 
@@ -91,8 +95,13 @@ public class CategoryEditor : MenuPanel
 
     public void Validate()
     {
-        if (string.IsNullOrWhiteSpace(categoryTitle.text))
+        string title = categoryTitle.text.Trim();
+
+        if (string.IsNullOrEmpty(title))
+        {
+            ShowError(EmptyTitleMessage);
             return;
+        }
 
         List<string> words = new();
 
@@ -108,9 +117,10 @@ public class CategoryEditor : MenuPanel
         }
 
         if (words.Count == 0)
+        {
+            ShowError(EmptyWordsMessage);
             return;
-
-        string title = categoryTitle.text.Trim();
+        }
 
         if (editingCategory == null)
         {
@@ -118,10 +128,15 @@ public class CategoryEditor : MenuPanel
         }
         else
         {
-            CustomCategoryManager.SaveCategory(editingCategory, title, words);
+            CustomCategoryManager.SaveCategory(
+                editingCategory,
+                title,
+                words
+            );
         }
 
         menuManager.ToggleMenu(categoryHandler);
+        categoryHandler.DisplayCategories();
     }
 
     private void AddWord(string word)
@@ -142,5 +157,11 @@ public class CategoryEditor : MenuPanel
             title,
             words
         );
+    }
+
+    private void ShowError(string message)
+    {
+        ErrorPopup popup = Instantiate(errorPopupPrefab);
+        popup.Setup(message);
     }
 }

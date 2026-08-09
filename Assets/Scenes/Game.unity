@@ -2758,6 +2758,7 @@ MonoBehaviour:
   categoryTitle: {fileID: 379738240}
   bulkInputField: {fileID: 1214799399}
   addWordBoxPrefab: {fileID: 5074152414329603893, guid: b8b6c1f3bd60aea479860548642b1872, type: 3}
+  errorPopupPrefab: {fileID: 8302206331617875737, guid: 1d32ad52be3942649a1efce87682173d, type: 3}
 --- !u!1 &445173084
 GameObject:
   m_ObjectHideFlags: 0
@@ -8697,6 +8698,7 @@ MonoBehaviour:
   canvasGroup: {fileID: 1629428496}
   gridParent: {fileID: 1383878065}
   playerBoxPrefab: {fileID: 7086532055915073149, guid: e96097f4e635ed14e967b693a5a33536, type: 3}
+  errorPopupPrefab: {fileID: 8302206331617875737, guid: 1d32ad52be3942649a1efce87682173d, type: 3}
 --- !u!225 &1629428496
 CanvasGroup:
   m_ObjectHideFlags: 0
