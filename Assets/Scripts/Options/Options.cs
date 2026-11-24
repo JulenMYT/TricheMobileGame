@@ -25,6 +25,20 @@ public class Options : MenuPanel
         // fermée alors que le menu Options est encore ouvert.
         foreach (Toggle toggle in new[] { twoFakeToggle, allFakeToggle, fakeStartToggle, shuffleToggle, undercoverToggle })
             toggle.onValueChanged.AddListener(_ => SaveSettings());
+
+        undercoverToggle.onValueChanged.AddListener(_ => RefreshCompatibility());
+        RefreshCompatibility();
+    }
+
+    // En mode Undercover, il y a toujours un seul intrus : les options
+    // "2 imposteurs" et "Tous imposteurs" n'ont aucun effet, on les grise
+    // pour que ce soit visible.
+    private void RefreshCompatibility()
+    {
+        bool undercover = undercoverToggle.isOn;
+
+        twoFakeToggle.interactable = !undercover;
+        allFakeToggle.interactable = !undercover;
     }
 
     public bool AllowSecondFake()
@@ -78,7 +92,8 @@ public class Options : MenuPanel
         twoFakeToggle.isOn = PlayerPrefs.GetInt(TWO_FAKE_KEY, 0) == 1;
         allFakeToggle.isOn = PlayerPrefs.GetInt(ALL_FAKE_KEY, 0) == 1;
         fakeStartToggle.isOn = PlayerPrefs.GetInt(FAKE_START_KEY, 0) == 1;
-        shuffleToggle.isOn = PlayerPrefs.GetInt(SHUFFLE_KEY, 0) == 1;
+        // Activé par défaut : enchaîner les catégories évite de retomber sur la même.
+        shuffleToggle.isOn = PlayerPrefs.GetInt(SHUFFLE_KEY, 1) == 1;
         undercoverToggle.isOn = PlayerPrefs.GetInt(UNDERCOVER_KEY, 0) == 1;
     }
 }

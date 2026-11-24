@@ -17,6 +17,11 @@ public class PlayerBox : MonoBehaviour
         return inputField.text;
     }
 
+    public void SetName(string playerName)
+    {
+        inputField.text = playerName;
+    }
+
     public void Focus()
     {
         UIUtility.Focus(inputField);

@@ -159,7 +159,7 @@ public class CategoryEditor : MenuPanel
         return wordBox;
     }
 
-    private void ShowError(string message)
+    public void ShowError(string message)
     {
         ErrorPopup popup = Instantiate(errorPopupPrefab);
         popup.Setup(message);

@@ -68,10 +68,23 @@ public class CategoryBox : MonoBehaviour
         categoryHandler.EditCategory(category);
     }
 
+    // Délai pendant lequel un deuxième appui confirme la suppression.
+    private const float DeleteConfirmDelay = 3f;
+
+    private float deleteRequestTime = float.NegativeInfinity;
+
     public void Delete()
     {
         if (!category.IsCustom)
             return;
+
+        // Premier appui : on demande confirmation, la suppression est définitive.
+        if (Time.unscaledTime - deleteRequestTime > DeleteConfirmDelay)
+        {
+            deleteRequestTime = Time.unscaledTime;
+            categoryHandler.ShowMessage($"Appuie encore pour supprimer « {category.Name} »");
+            return;
+        }
 
         CustomCategoryManager.DeleteCategory(category.Name);
         categoryHandler.DisplayCategories();
