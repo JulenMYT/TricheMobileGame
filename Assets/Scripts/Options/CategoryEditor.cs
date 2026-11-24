@@ -5,8 +5,7 @@ using UnityEngine;
 
 public class CategoryEditor : MenuPanel
 {
-    private const string EmptyTitleMessage = "La catégorie doit avoir un nom !";
-    private const string EmptyWordsMessage = "La catégorie doit contenir au moins un mot !";
+    private const string EmptyWordsMessage = "La catÃ©gorie doit contenir au moins un mot !";
 
     [SerializeField] private CategoryHandler categoryHandler;
 
@@ -31,7 +30,7 @@ public class CategoryEditor : MenuPanel
         menuManager = ServiceLocator.Get<MenuManager>();
     }
 
-    public void Reset()
+    public void ResetEditor()
     {
         editingCategory = null;
 
@@ -49,7 +48,7 @@ public class CategoryEditor : MenuPanel
 
     public void OpenCategory(WordsDatabase.WordCategory category)
     {
-        Reset();
+        ResetEditor();
 
         editingCategory = category.Name;
         categoryTitle.text = category.Name;
@@ -97,9 +96,11 @@ public class CategoryEditor : MenuPanel
     {
         string title = categoryTitle.text.Trim();
 
-        if (string.IsNullOrEmpty(title))
+        string nameError = CustomCategoryManager.ValidateName(title, editingCategory);
+
+        if (nameError != null)
         {
-            ShowError(EmptyTitleMessage);
+            ShowError(nameError);
             return;
         }
 
@@ -122,17 +123,17 @@ public class CategoryEditor : MenuPanel
             return;
         }
 
-        if (editingCategory == null)
+        string saveError = CustomCategoryManager.SaveCategory(
+            editingCategory,
+            title,
+            words
+        );
+
+        // En cas d'Ã©chec, l'Ã©diteur reste ouvert pour ne pas perdre les mots saisis.
+        if (saveError != null)
         {
-            CreateCategory(title, words);
-        }
-        else
-        {
-            CustomCategoryManager.SaveCategory(
-                editingCategory,
-                title,
-                words
-            );
+            ShowError(saveError);
+            return;
         }
 
         menuManager.ToggleMenu(categoryHandler);
@@ -149,14 +150,6 @@ public class CategoryEditor : MenuPanel
         wordBoxes.Add(wordBox);
         wordBox.SetWord(word);
         wordBox.SetHandler(this);
-    }
-
-    private void CreateCategory(string title, List<string> words)
-    {
-        CustomCategoryManager.CreateCategory(
-            title,
-            words
-        );
     }
 
     private void ShowError(string message)

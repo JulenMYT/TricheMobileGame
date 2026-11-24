@@ -1,5 +1,4 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class MenuManager : MonoBehaviour
@@ -8,6 +7,11 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private float fadeDuration;
 
     private MenuPanel currentMenu;
+
+    // Transition en cours et menu en train de se fermer, pour pouvoir
+    // interrompre proprement une transition si une autre est demandée.
+    private Coroutine switchRoutine;
+    private MenuPanel closingMenu;
 
     private void Awake()
     {
@@ -18,31 +22,53 @@ public class MenuManager : MonoBehaviour
     private void Start()
     {
         if (defaultPanel != null)
-            StartCoroutine(SwitchRoutine(defaultPanel));
+            SwitchTo(defaultPanel);
     }
 
     public void ToggleMenu(MenuPanel panel)
     {
-        if (currentMenu == panel)
-        {
-            StartCoroutine(SwitchRoutine(null));
-            return;
-        }
-
-        StartCoroutine(SwitchRoutine(panel));
+        SwitchTo(currentMenu == panel ? null : panel);
     }
 
-    public void CloseAll() => StartCoroutine(SwitchRoutine(null));
+    public void CloseAll() => SwitchTo(null);
+
+    private void SwitchTo(MenuPanel panel)
+    {
+        if (switchRoutine != null)
+        {
+            StopCoroutine(switchRoutine);
+            switchRoutine = null;
+
+            // Termine immédiatement la fermeture interrompue.
+            if (closingMenu != null)
+            {
+                Hide(closingMenu);
+
+                if (currentMenu == closingMenu)
+                    currentMenu = null;
+
+                closingMenu = null;
+            }
+        }
+
+        switchRoutine = StartCoroutine(SwitchRoutine(panel));
+    }
 
     private IEnumerator SwitchRoutine(MenuPanel panel)
     {
         //Close Old Menu
-        if (currentMenu != null)
+        if (currentMenu != null && currentMenu != panel)
         {
-            yield return Fade(currentMenu.canvasGroup, currentMenu.canvasGroup.alpha, 0);
-            currentMenu.canvasGroup.interactable = false;
-            currentMenu.canvasGroup.blocksRaycasts = false;
-            currentMenu.Close();
+            closingMenu = currentMenu;
+
+            // Désactive les clics dès le début du fondu pour éviter les doubles appuis.
+            closingMenu.canvasGroup.interactable = false;
+            closingMenu.canvasGroup.blocksRaycasts = false;
+
+            yield return Fade(closingMenu.canvasGroup, closingMenu.canvasGroup.alpha, 0);
+
+            closingMenu.Close();
+            closingMenu = null;
         }
 
         //Open New Menu
@@ -52,10 +78,20 @@ public class MenuManager : MonoBehaviour
         {
             currentMenu.Open();
             CanvasGroup newGroup = currentMenu.canvasGroup;
-            currentMenu.canvasGroup.interactable = true;
-            currentMenu.canvasGroup.blocksRaycasts = true;
+            newGroup.interactable = true;
+            newGroup.blocksRaycasts = true;
             yield return Fade(newGroup, newGroup.alpha, 1);
         }
+
+        switchRoutine = null;
+    }
+
+    private void Hide(MenuPanel panel)
+    {
+        panel.canvasGroup.alpha = 0;
+        panel.canvasGroup.interactable = false;
+        panel.canvasGroup.blocksRaycasts = false;
+        panel.Close();
     }
 
     private IEnumerator Fade(CanvasGroup canvasGroup, float from, float to)

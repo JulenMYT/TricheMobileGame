@@ -48,7 +48,7 @@ public class OnlineGame : NetworkBehaviour
 
         if (playerNames.Count != players.Count)
         {
-            Debug.LogWarning("Impossible de lancer la partie : tous les joueurs ne sont pas encore enregistrés.");
+            Debug.LogWarning("Impossible de lancer la partie : tous les joueurs ne sont pas encore enregistrÃ©s.");
             return;
         }
 

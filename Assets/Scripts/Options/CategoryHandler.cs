@@ -44,7 +44,7 @@ public class CategoryHandler : MenuPanel
 
     public void AddCategory()
     {
-        categoryEditor.Reset();
+        categoryEditor.ResetEditor();
         menuManager.ToggleMenu(categoryEditor);
     }
 }

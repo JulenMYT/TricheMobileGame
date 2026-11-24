@@ -260,6 +260,17 @@ public static class WordsDatabase
             return Words[Random.Range(0, Words.Count)];
         }
 
+        // Renvoie un mot différent de 'excluded', ou null si la catégorie n'en contient pas.
+        public string GetRandomWordExcept(string excluded)
+        {
+            List<string> candidates = Words.FindAll(w => w != excluded);
+
+            if (candidates.Count == 0)
+                return null;
+
+            return candidates[Random.Range(0, candidates.Count)];
+        }
+
         public int GetWordCount()
         {
             return Words.Count;

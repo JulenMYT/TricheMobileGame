@@ -20,6 +20,11 @@ public class Options : MenuPanel
     private void Start()
     {
         LoadSettings();
+
+        // Enregistre à chaque changement, pour ne rien perdre si l'appli est
+        // fermée alors que le menu Options est encore ouvert.
+        foreach (Toggle toggle in new[] { twoFakeToggle, allFakeToggle, fakeStartToggle, shuffleToggle, undercoverToggle })
+            toggle.onValueChanged.AddListener(_ => SaveSettings());
     }
 
     public bool AllowSecondFake()

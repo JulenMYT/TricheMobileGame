@@ -1,72 +1,59 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// L'état activé/désactivé de chaque catégorie est lu directement dans les PlayerPrefs
+// (activée par défaut), pour que les catégories créées ou renommées en cours de
+// partie soient prises en compte sans cache à resynchroniser.
 public static class CategorySettings
 {
     private const string CATEGORY_KEY_PREFIX = "Category_";
 
-    private static HashSet<string> enabledCategories = new HashSet<string>();
-
-    private static bool initialized = false;
-
-    public static void Initialize()
-    {
-        enabledCategories.Clear();
-
-        var allCategories = WordsDatabase.GetAllCategories();
-
-        foreach (var category in allCategories)
-        {
-            string key = CATEGORY_KEY_PREFIX + category.Name;
-
-            bool enabled = PlayerPrefs.GetInt(key, 1) == 1;
-
-            if (enabled)
-                enabledCategories.Add(category.Name);
-        }
-
-        initialized = true;
-    }
+    private static string GetKey(string categoryName) => CATEGORY_KEY_PREFIX + categoryName;
 
     public static void SetCategoryEnabled(string categoryName, bool enabled)
     {
-        if (!initialized)
-            Initialize();
-
-        if (enabled)
-            enabledCategories.Add(categoryName);
-        else
-            enabledCategories.Remove(categoryName);
-
-        PlayerPrefs.SetInt(
-            CATEGORY_KEY_PREFIX + categoryName,
-            enabled ? 1 : 0
-        );
-
+        PlayerPrefs.SetInt(GetKey(categoryName), enabled ? 1 : 0);
         PlayerPrefs.Save();
     }
 
     public static bool IsCategoryEnabled(string categoryName)
     {
-        if (!initialized)
-            Initialize();
-
-        return enabledCategories.Contains(categoryName);
+        return PlayerPrefs.GetInt(GetKey(categoryName), 1) == 1;
     }
 
     public static List<string> GetEnabledCategoryNames()
     {
-        if (!initialized)
-            Initialize();
+        List<string> names = new();
 
-        return new List<string>(enabledCategories);
+        foreach (WordsDatabase.WordCategory category in WordsDatabase.GetAllCategories())
+        {
+            if (IsCategoryEnabled(category.Name))
+                names.Add(category.Name);
+        }
+
+        return names;
     }
 
     public static int GetEnabledCount()
     {
-        if (!initialized)
-            Initialize();
+        return GetEnabledCategoryNames().Count;
+    }
 
-        return enabledCategories.Count;
+    // Conserve l'état activé/désactivé quand une catégorie est renommée.
+    public static void RenameCategory(string oldName, string newName)
+    {
+        if (oldName == newName)
+            return;
+
+        bool enabled = IsCategoryEnabled(oldName);
+
+        PlayerPrefs.DeleteKey(GetKey(oldName));
+        SetCategoryEnabled(newName, enabled);
+    }
+
+    public static void ForgetCategory(string categoryName)
+    {
+        PlayerPrefs.DeleteKey(GetKey(categoryName));
+        PlayerPrefs.Save();
     }
 }

@@ -31,8 +31,15 @@ public class Game : MonoBehaviour
         menuManager = ServiceLocator.Get<MenuManager>();
     }
 
+    // Empêche de relancer une transition pendant qu'une autre est en cours
+    // (double appui sur un bouton pendant le fondu).
+    private bool isTransitioning;
+
     public void StartGame()
     {
+        if (isTransitioning)
+            return;
+
         if (!setupPlayer.IsValid())
             return;
 
@@ -55,6 +62,8 @@ public class Game : MonoBehaviour
 
     private IEnumerator StartGameSequence()
     {
+        isTransitioning = true;
+
         yield return screenFader.Fade(0f, 1f, 0.5f);
 
         InitializeGame();
@@ -64,6 +73,8 @@ public class Game : MonoBehaviour
         SetupNextPlayer();
 
         yield return screenFader.Fade(1f, 0f, 0.5f);
+
+        isTransitioning = false;
     }
 
     private void InitializeGame()
@@ -86,13 +97,16 @@ public class Game : MonoBehaviour
         if (!options.IsUndercoverMode())
             return;
 
-        do
-        {
-            fakeWord = WordsDatabase
-                .GetWordCategory(category)
-                .GetRandomWord();
+        // Si la catégorie n'a qu'un seul mot, il n'y a pas de mot d'intrus possible :
+        // la manche se joue alors en mode classique (fakeWord reste null).
+        fakeWord = WordsDatabase
+            .GetWordCategory(category)
+            ?.GetRandomWordExcept(word);
+    }
 
-        } while (fakeWord == word);
+    private bool IsUndercoverRound()
+    {
+        return fakeWord != null;
     }
 
     private void AssignFakes()
@@ -116,14 +130,14 @@ public class Game : MonoBehaviour
     private bool ShouldMakeAllPlayersFake()
     {
         return options.AllowAllFake()
-            && !options.IsUndercoverMode()
+            && !IsUndercoverRound()
             && Random.Range(0, 100) < oddsAllFake;
     }
 
     private bool ShouldAddSecondFake()
     {
         return options.AllowSecondFake()
-            && !options.IsUndercoverMode()
+            && !IsUndercoverRound()
             && players.Count > 3
             && Random.Range(0, 100) < oddsSecondFake;
     }
@@ -143,11 +157,16 @@ public class Game : MonoBehaviour
 
     public void RevealNextPlayer()
     {
+        if (isTransitioning)
+            return;
+
         StartCoroutine(RevealNextPlayerTransition());
     }
 
     private IEnumerator RevealNextPlayerTransition()
     {
+        isTransitioning = true;
+
         yield return screenFader.Fade(0f, 1f, 0.5f);
 
         if (currentPlayerIndex >= players.Count)
@@ -160,6 +179,8 @@ public class Game : MonoBehaviour
         }
 
         yield return screenFader.Fade(1f, 0f, 0.5f);
+
+        isTransitioning = false;
     }
 
     private void SetupNextPlayer()
@@ -170,7 +191,7 @@ public class Game : MonoBehaviour
             category,
             GetPlayerWord(isFake),
             players[currentPlayerIndex],
-            isFake && !options.IsUndercoverMode()
+            isFake && !IsUndercoverRound()
         );
 
         currentPlayerIndex++;
@@ -181,7 +202,7 @@ public class Game : MonoBehaviour
         if (!isFake)
             return word;
 
-        if (options.IsUndercoverMode())
+        if (IsUndercoverRound())
             return fakeWord;
 
         return "IMPOSTEUR";

@@ -4,8 +4,9 @@ using UnityEngine;
 public class SetupPlayer : MenuPanel
 {
     private const string EmptyNameMessage = "Un joueur n'a pas de nom !";
-    private const string DupeNameMessage = "Les joueurs doivent avoir des noms diff�rents !";
+    private const string DupeNameMessage = "Les joueurs doivent avoir des noms différents !";
     private const string LowPlayerMessage = "Il faut au moins 3 joueurs !";
+    private const string NoCategoryMessage = "Active au moins une catégorie !";
 
     [SerializeField] private RectTransform gridParent;
     [SerializeField] private PlayerBox playerBoxPrefab;
@@ -33,6 +34,12 @@ public class SetupPlayer : MenuPanel
         if (playerBoxes.Count < 3)
         {
             ShowError(LowPlayerMessage);
+            return false;
+        }
+
+        if (CategorySettings.GetEnabledCount() == 0)
+        {
+            ShowError(NoCategoryMessage);
             return false;
         }
 
