@@ -14,6 +14,11 @@ public class ErrorPopup : MonoBehaviour
         popupText.text = message;
     }
 
+    public static void Show(ErrorPopup prefab, string message)
+    {
+        Instantiate(prefab).Setup(message);
+    }
+
     private void Update()
     {
         popupText.rectTransform.position += Vector3.up * (speed * Time.deltaTime);

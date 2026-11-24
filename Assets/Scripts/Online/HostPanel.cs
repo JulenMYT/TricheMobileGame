@@ -1,10 +1,11 @@
+using System;
 using TMPro;
-using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
 public class HostPanel : MenuPanel
 {
     private const string EmptyNameError = "Veuillez entrer un nom.";
+    private const string ConnectingMessage = "Création du salon...";
 
     [SerializeField] private TMP_InputField playerNameInput;
     [SerializeField] private ErrorPopup errorPopup;
@@ -13,37 +14,55 @@ public class HostPanel : MenuPanel
     private RoomService roomService;
     private MenuManager menuManager;
 
+    // Empêche de créer deux salons en appuyant deux fois pendant l'attente.
+    private bool busy;
+
     private void Start()
     {
         roomService = ServiceLocator.Get<RoomService>();
         menuManager = ServiceLocator.Get<MenuManager>();
     }
 
+    public override void Open()
+    {
+        OnlinePlayerName.Fill(playerNameInput);
+    }
+
     public async void CreateGame()
     {
+        if (busy)
+            return;
+
         string playerName = playerNameInput.text.Trim();
 
         if (string.IsNullOrEmpty(playerName))
         {
-            ErrorPopup popup = Instantiate(errorPopup);
-            popup.Setup(EmptyNameError);
+            ErrorPopup.Show(errorPopup, EmptyNameError);
             return;
         }
 
+        busy = true;
+        ErrorPopup.Show(errorPopup, ConnectingMessage);
+
         try
         {
-            Lobby lobby = await roomService.CreateRoom(playerName);
+            await roomService.CreateRoom(playerName);
 
-            string roomCode = lobby.Data["RoomCode"].Value;
+            OnlinePlayerName.Save(playerName);
 
-            roomPanel.SetRoomCode(roomCode);
+            roomPanel.SetRoomCode(roomService.RoomCode);
             roomPanel.SetHost(true);
 
-            menuManager.ToggleMenu(roomPanel);
+            menuManager.ShowMenu(roomPanel);
         }
-        catch (System.Exception exception)
+        catch (Exception exception)
         {
             Debug.LogException(exception);
+            ErrorPopup.Show(errorPopup, RoomService.GetErrorMessage(exception));
+        }
+        finally
+        {
+            busy = false;
         }
     }
 }

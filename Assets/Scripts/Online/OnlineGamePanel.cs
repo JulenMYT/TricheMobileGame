@@ -11,6 +11,10 @@ public class OnlineGamePanel : MenuPanel
 
     [SerializeField] private GameObject endVoteButton;
 
+    // Bouton de l'hôte affiché après la révélation, pour revenir au salon et relancer.
+    [SerializeField] private GameObject backToRoomButton;
+    [SerializeField] private ErrorPopup errorPopup;
+
     [SerializeField] private GameObject game;
     [SerializeField] private GameObject reveal;
 
@@ -27,6 +31,8 @@ public class OnlineGamePanel : MenuPanel
     [SerializeField] private float fadeDuration = 0.5f;
     [SerializeField] private float delayBetweenTexts = 0.5f;
 
+    private bool isHost;
+
     public void Setup(
         string word,
         string category,
@@ -37,11 +43,14 @@ public class OnlineGamePanel : MenuPanel
 
         game.SetActive(true);
         reveal.SetActive(false);
+
+        SetBackToRoomVisible(false);
     }
 
     public void AddPlayer(
         ulong playerId,
-        string playerName)
+        string playerName,
+        bool isLocalPlayer)
     {
         GameObject playerButton =
             Instantiate(
@@ -54,8 +63,20 @@ public class OnlineGamePanel : MenuPanel
             .Setup(
                 playerId,
                 playerName,
-                this
+                this,
+                isLocalPlayer
             );
+    }
+
+    public void RemovePlayer(ulong playerId)
+    {
+        foreach (Transform child in playersContainer)
+        {
+            OnlinePlayerButton playerButton = child.GetComponent<OnlinePlayerButton>();
+
+            if (playerButton != null && playerButton.GetPlayerId() == playerId)
+                Destroy(child.gameObject);
+        }
     }
 
     public void SelectPlayer(ulong playerId)
@@ -120,6 +141,9 @@ public class OnlineGamePanel : MenuPanel
         yield return new WaitForSeconds(delayBetweenTexts);
 
         yield return FadeIn(wordGroup);
+
+        // Une fois tout révélé, l'hôte peut ramener tout le monde au salon.
+        SetBackToRoomVisible(isHost);
     }
 
     private IEnumerator FadeIn(CanvasGroup group)
@@ -146,6 +170,12 @@ public class OnlineGamePanel : MenuPanel
         group.alpha = alpha;
     }
 
+    private void SetBackToRoomVisible(bool visible)
+    {
+        if (backToRoomButton != null)
+            backToRoomButton.SetActive(visible);
+    }
+
     public void ClearPlayers()
     {
         foreach (Transform child in playersContainer)
@@ -154,21 +184,35 @@ public class OnlineGamePanel : MenuPanel
 
     public override void Close()
     {
+        StopAllCoroutines();
         ClearPlayers();
 
         game.SetActive(false);
         reveal.SetActive(false);
+
+        SetBackToRoomVisible(false);
     }
 
     public void SetHost(bool isHost)
     {
+        this.isHost = isHost;
         endVoteButton.SetActive(isHost);
     }
 
     public void EndVote()
     {
-        ServiceLocator
+        string error = ServiceLocator
             .Get<OnlineGame>()
             .EndVote();
+
+        if (error != null && errorPopup != null)
+            ErrorPopup.Show(errorPopup, error);
+    }
+
+    public void BackToRoom()
+    {
+        ServiceLocator
+            .Get<OnlineGame>()
+            .BackToRoom();
     }
 }

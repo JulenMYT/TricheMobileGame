@@ -14,7 +14,9 @@ public class NetworkServices : MonoBehaviour
 
     public Task Initialize()
     {
-        if (initializationTask == null)
+        // Une tentative échouée (pas de réseau au lancement, par exemple) ne doit pas
+        // bloquer le mode online jusqu'au redémarrage de l'appli : on réessaie.
+        if (initializationTask == null || initializationTask.IsFaulted || initializationTask.IsCanceled)
             initializationTask = InitializeServices();
 
         return initializationTask;

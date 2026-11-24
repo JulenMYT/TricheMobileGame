@@ -19,11 +19,18 @@ public class OnlinePlayerButton : MonoBehaviour
     public void Setup(
         ulong id,
         string playerName,
-        OnlineGamePanel panel)
+        OnlineGamePanel panel,
+        bool isLocalPlayer)
     {
         playerId = id;
-        playerNameText.text = playerName;
+        playerNameText.text = isLocalPlayer ? $"{playerName} (toi)" : playerName;
         gamePanel = panel;
+
+        // On ne peut pas voter pour soi-même : le serveur l'ignorerait.
+        Button button = GetComponentInChildren<Button>();
+
+        if (button != null)
+            button.interactable = !isLocalPlayer;
     }
 
     public ulong GetPlayerId()

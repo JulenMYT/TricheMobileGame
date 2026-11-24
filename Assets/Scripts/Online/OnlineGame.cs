@@ -7,15 +7,28 @@ using UnityEngine;
 
 public class OnlineGame : NetworkBehaviour
 {
+    public const string NotEnoughPlayersMessage = "Il faut au moins 3 joueurs !";
+    public const string PlayersNotReadyMessage = "Attends que tous les joueurs soient connectés.";
+    public const string NoVoteMessage = "Personne n'a encore voté !";
+
     [SerializeField] private OnlineGamePanel gamePanel;
     [SerializeField] private Options options;
 
     [SerializeField] private int oddsSecondFake;
     [SerializeField] private int oddsAllFake;
+    [SerializeField] private int minPlayers = 3;
 
-    private readonly List<int> fakePlayerIndices = new();
+    // Noms des joueurs connectés, enregistrés auprès du serveur.
     private readonly Dictionary<ulong, string> playerNames = new();
+
+    // Manche en cours (serveur uniquement). Les imposteurs sont identifiés par leur
+    // identifiant réseau et non par leur position, qui change si quelqu'un se déconnecte.
+    private readonly HashSet<ulong> fakeClientIds = new();
+    private readonly Dictionary<ulong, string> roundPlayers = new();
     private readonly Dictionary<ulong, ulong> playerVotes = new();
+
+    private bool roundInProgress;
+    private bool voteEnded;
 
     private string category;
     private string word;
@@ -28,42 +41,62 @@ public class OnlineGame : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        if (IsServer)
+            NetworkManager.OnClientDisconnectCallback += OnClientDisconnected;
+
         RegisterLocalPlayer();
     }
 
-    public void StartGame()
+    public override void OnNetworkDespawn()
+    {
+        if (NetworkManager != null)
+            NetworkManager.OnClientDisconnectCallback -= OnClientDisconnected;
+
+        playerNames.Clear();
+        ResetRound();
+    }
+
+    // ------------------------------------------------------------------ lancement
+
+    // Lance une manche. Renvoie un message d'erreur à afficher à l'hôte, ou null.
+    public string StartGame()
     {
         if (!IsServer)
-            return;
-
-        ResetGame();
+            return null;
 
         List<ulong> players = GetConnectedPlayers();
 
-        if (players.Count < 1)
-        {
-            Debug.LogWarning("Impossible de lancer la partie : il faut au moins 3 joueurs.");
-            return;
-        }
+        if (players.Count < minPlayers)
+            return NotEnoughPlayersMessage;
 
-        if (playerNames.Count != players.Count)
-        {
-            Debug.LogWarning("Impossible de lancer la partie : tous les joueurs ne sont pas encore enregistrés.");
-            return;
-        }
+        if (players.Any(id => !playerNames.ContainsKey(id)))
+            return PlayersNotReadyMessage;
+
+        ResetRound();
+
+        foreach (ulong id in players)
+            roundPlayers[id] = playerNames[id];
 
         AssignWords();
-        AssignFakes(players.Count);
+        AssignFakes(players);
+
+        roundInProgress = true;
+
         SendPlayerWords(players);
         SendPlayersToClients(players);
+
+        return null;
     }
 
-    private void ResetGame()
+    private void ResetRound()
     {
-        fakePlayerIndices.Clear();
+        fakeClientIds.Clear();
+        roundPlayers.Clear();
         playerVotes.Clear();
 
+        roundInProgress = false;
         voteEnded = false;
+
         category = null;
         word = null;
         fakeWord = null;
@@ -89,77 +122,66 @@ public class OnlineGame : NetworkBehaviour
         if (!options.IsUndercoverMode())
             return;
 
-        do
-        {
-            fakeWord = WordsDatabase
-                .GetWordCategory(category)
-                .GetRandomWord();
-
-        } while (fakeWord == word);
+        // Comme en offline : sans autre mot dans la catégorie, la manche se joue en classique.
+        fakeWord = WordsDatabase
+            .GetWordCategory(category)
+            ?.GetRandomWordExcept(word);
     }
 
-    private void AssignFakes(int playerCount)
-    {
-        fakePlayerIndices.Clear();
+    private bool IsUndercoverRound() => fakeWord != null;
 
+    private void AssignFakes(List<ulong> players)
+    {
         if (ShouldMakeAllPlayersFake())
         {
-            for (int i = 0; i < playerCount; i++)
-                fakePlayerIndices.Add(i);
-
+            fakeClientIds.UnionWith(players);
             return;
         }
 
-        AddRandomFake(playerCount);
+        AddRandomFake(players);
 
-        if (ShouldAddSecondFake(playerCount))
-            AddRandomFake(playerCount);
+        if (ShouldAddSecondFake(players.Count))
+            AddRandomFake(players);
     }
 
     private bool ShouldMakeAllPlayersFake()
     {
         return options.AllowAllFake()
-            && !options.IsUndercoverMode()
+            && !IsUndercoverRound()
             && Random.Range(0, 100) < oddsAllFake;
     }
 
     private bool ShouldAddSecondFake(int playerCount)
     {
         return options.AllowSecondFake()
-            && !options.IsUndercoverMode()
+            && !IsUndercoverRound()
             && playerCount > 3
             && Random.Range(0, 100) < oddsSecondFake;
     }
 
-    private void AddRandomFake(int playerCount)
+    private void AddRandomFake(List<ulong> players)
     {
-        int fakeIndex;
+        List<ulong> candidates = players.Where(id => !fakeClientIds.Contains(id)).ToList();
 
-        do
-        {
-            fakeIndex = Random.Range(0, playerCount);
-        }
-        while (fakePlayerIndices.Contains(fakeIndex));
-
-        fakePlayerIndices.Add(fakeIndex);
+        if (candidates.Count > 0)
+            fakeClientIds.Add(candidates[Random.Range(0, candidates.Count)]);
     }
 
     private void SendPlayerWords(List<ulong> players)
     {
-        for (int i = 0; i < players.Count; i++)
+        foreach (ulong playerId in players)
         {
-            bool isFake = fakePlayerIndices.Contains(i);
-            string playerWord = GetPlayerWord(isFake);
+            bool isFake = fakeClientIds.Contains(playerId);
 
             SendWordClientRpc(
-                playerWord,
+                GetPlayerWord(isFake),
                 category,
-                isFake && !options.IsUndercoverMode(),
+                isFake && !IsUndercoverRound(),
                 new ClientRpcParams
                 {
                     Send = new ClientRpcSendParams
                     {
-                        TargetClientIds = new[] { players[i] }
+                        TargetClientIds = new[] { playerId }
                     }
                 }
             );
@@ -171,7 +193,7 @@ public class OnlineGame : NetworkBehaviour
         if (!isFake)
             return word;
 
-        if (options.IsUndercoverMode())
+        if (IsUndercoverRound())
             return fakeWord;
 
         return "IMPOSTEUR";
@@ -194,38 +216,29 @@ public class OnlineGame : NetworkBehaviour
 
         ServiceLocator
             .Get<MenuManager>()
-            .ToggleMenu(gamePanel);
+            .ShowMenu(gamePanel);
     }
+
+    // ------------------------------------------------------------------ joueurs
 
     private void RegisterLocalPlayer()
     {
-        RoomService roomService =
-            ServiceLocator.Get<RoomService>();
-
-        Lobby lobby =
-            roomService.CurrentLobby;
+        RoomService roomService = ServiceLocator.Get<RoomService>();
+        Lobby lobby = roomService.CurrentLobby;
 
         if (lobby == null)
             return;
 
-        string playerId =
-            AuthenticationService.Instance.PlayerId;
-
-        Player player = lobby.Players.Find(
-            lobbyPlayer => lobbyPlayer.Id == playerId
-        );
+        string playerId = AuthenticationService.Instance.PlayerId;
+        Player player = lobby.Players.Find(lobbyPlayer => lobbyPlayer.Id == playerId);
 
         if (player == null)
             return;
 
-        if (!player.Data.TryGetValue(
-            "PlayerName",
-            out PlayerDataObject playerName))
+        if (!player.Data.TryGetValue("PlayerName", out PlayerDataObject playerName))
             return;
 
-        RegisterPlayerServerRpc(
-            playerName.Value
-        );
+        RegisterPlayerServerRpc(playerName.Value);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -233,10 +246,24 @@ public class OnlineGame : NetworkBehaviour
         string playerName,
         ServerRpcParams rpcParams = default)
     {
-        ulong clientId =
-            rpcParams.Receive.SenderClientId;
+        playerNames[rpcParams.Receive.SenderClientId] = playerName;
+    }
 
-        playerNames[clientId] = playerName;
+    private void OnClientDisconnected(ulong clientId)
+    {
+        // Sans ça, un joueur parti restait enregistré et bloquait les parties suivantes.
+        playerNames.Remove(clientId);
+
+        if (!roundInProgress)
+            return;
+
+        // Ses votes, et les votes contre lui, ne comptent plus.
+        playerVotes.Remove(clientId);
+
+        foreach (ulong voter in playerVotes.Where(pair => pair.Value == clientId).Select(pair => pair.Key).ToList())
+            playerVotes.Remove(voter);
+
+        RemovePlayerClientRpc(clientId);
     }
 
     private void SendPlayersToClients(List<ulong> players)
@@ -244,17 +271,7 @@ public class OnlineGame : NetworkBehaviour
         ClearPlayersClientRpc();
 
         foreach (ulong playerId in players)
-        {
-            if (!playerNames.TryGetValue(
-                playerId,
-                out string playerName))
-                continue;
-
-            AddPlayerClientRpc(
-                playerId,
-                playerName
-            );
-        }
+            AddPlayerClientRpc(playerId, roundPlayers[playerId]);
     }
 
     [ClientRpc]
@@ -264,15 +281,18 @@ public class OnlineGame : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void AddPlayerClientRpc(
-        ulong playerId,
-        string playerName)
+    private void AddPlayerClientRpc(ulong playerId, string playerName)
     {
-        gamePanel.AddPlayer(
-            playerId,
-            playerName
-        );
+        gamePanel.AddPlayer(playerId, playerName, playerId == NetworkManager.LocalClientId);
     }
+
+    [ClientRpc]
+    private void RemovePlayerClientRpc(ulong playerId)
+    {
+        gamePanel.RemovePlayer(playerId);
+    }
+
+    // ------------------------------------------------------------------ votes
 
     public void Vote(ulong targetPlayerId)
     {
@@ -287,13 +307,12 @@ public class OnlineGame : NetworkBehaviour
         ulong targetPlayerId,
         ServerRpcParams rpcParams = default)
     {
-        ulong voterPlayerId =
-            rpcParams.Receive.SenderClientId;
-
-        if (!playerNames.ContainsKey(voterPlayerId))
+        if (!roundInProgress || voteEnded)
             return;
 
-        if (!playerNames.ContainsKey(targetPlayerId))
+        ulong voterPlayerId = rpcParams.Receive.SenderClientId;
+
+        if (!roundPlayers.ContainsKey(voterPlayerId) || !roundPlayers.ContainsKey(targetPlayerId))
             return;
 
         if (voterPlayerId == targetPlayerId)
@@ -302,95 +321,58 @@ public class OnlineGame : NetworkBehaviour
         playerVotes[voterPlayerId] = targetPlayerId;
     }
 
-    private bool voteEnded;
-
-    public void EndVote()
+    // Termine le vote. Renvoie un message d'erreur à afficher à l'hôte, ou null.
+    public string EndVote()
     {
-        if (!IsServer)
-            return;
+        if (!IsServer || !roundInProgress || voteEnded)
+            return null;
 
-        if (voteEnded)
-            return;
+        if (playerVotes.Count == 0)
+            return NoVoteMessage;
 
         voteEnded = true;
 
         ResolveVotes();
+
+        return null;
     }
 
     private void ResolveVotes()
     {
-        if (playerVotes.Count == 0)
-        {
-            voteEnded = false;
-            return;
-        }
-
         Dictionary<ulong, int> voteCounts = new();
 
         foreach (ulong targetPlayerId in playerVotes.Values)
         {
-            if (!voteCounts.ContainsKey(targetPlayerId))
-                voteCounts[targetPlayerId] = 0;
-
-            voteCounts[targetPlayerId]++;
+            voteCounts.TryGetValue(targetPlayerId, out int count);
+            voteCounts[targetPlayerId] = count + 1;
         }
 
-        int highestVotes =
-            voteCounts.Values.Max();
+        int highestVotes = voteCounts.Values.Max();
 
-        List<ulong> candidates =
-            voteCounts
-                .Where(pair => pair.Value == highestVotes)
-                .Select(pair => pair.Key)
-                .ToList();
+        List<ulong> candidates = voteCounts
+            .Where(pair => pair.Value == highestVotes)
+            .Select(pair => pair.Key)
+            .ToList();
 
-        ulong votedPlayer =
-            candidates[Random.Range(0, candidates.Count)];
-
-        bool votedPlayerIsImpostor =
-            IsPlayerImpostor(votedPlayer);
-
-        List<ulong> players =
-            GetConnectedPlayers();
-
-        string impostorPlayerName =
-            GetImpostorNames(players);
+        ulong votedPlayer = candidates[Random.Range(0, candidates.Count)];
 
         RevealResultClientRpc(
-            playerNames[votedPlayer],
-            votedPlayerIsImpostor,
-            impostorPlayerName,
+            roundPlayers[votedPlayer],
+            fakeClientIds.Contains(votedPlayer),
+            GetImpostorNames(),
             word
         );
 
         playerVotes.Clear();
     }
 
-    private bool IsPlayerImpostor(ulong playerId)
+    private string GetImpostorNames()
     {
-        List<ulong> players = GetConnectedPlayers();
-
-        int index = players.IndexOf(playerId);
-
-        return fakePlayerIndices.Contains(index);
-    }
-
-    private string GetImpostorNames(List<ulong> players)
-    {
-        List<string> impostorNames = new();
-
-        foreach (int fakeIndex in fakePlayerIndices)
-        {
-            if (fakeIndex < 0 || fakeIndex >= players.Count)
-                continue;
-
-            ulong playerId = players[fakeIndex];
-
-            if (playerNames.TryGetValue(playerId, out string playerName))
-                impostorNames.Add(playerName);
-        }
-
-        return string.Join(", ", impostorNames);
+        // Les noms viennent de la manche : un imposteur parti entre-temps est quand même affiché.
+        return string.Join(", ", fakeClientIds
+            .OrderBy(id => id)
+            .Where(roundPlayers.ContainsKey)
+            .Select(id => roundPlayers[id]));
     }
 
     [ClientRpc]
@@ -406,5 +388,25 @@ public class OnlineGame : NetworkBehaviour
             impostorPlayerName,
             realWord
         );
+    }
+
+    // ------------------------------------------------------------------ fin de manche
+
+    // L'hôte ramène tout le monde dans le salon, d'où il peut relancer une manche.
+    public void BackToRoom()
+    {
+        if (!IsServer)
+            return;
+
+        ResetRound();
+        BackToRoomClientRpc();
+    }
+
+    [ClientRpc]
+    private void BackToRoomClientRpc()
+    {
+        ServiceLocator
+            .Get<MenuManager>()
+            .ShowMenu(ServiceLocator.Get<RoomPanel>());
     }
 }

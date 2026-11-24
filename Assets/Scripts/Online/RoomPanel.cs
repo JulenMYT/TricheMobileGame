@@ -13,8 +13,10 @@ public class RoomPanel : MenuPanel
     [SerializeField] private ErrorPopup errorPopup;
 
     private MenuManager menuManager;
+    private RoomService roomService;
 
     private bool isHost;
+    private bool leaving;
 
     private void Awake()
     {
@@ -24,6 +26,15 @@ public class RoomPanel : MenuPanel
     private void Start()
     {
         menuManager = ServiceLocator.Get<MenuManager>();
+        roomService = ServiceLocator.Get<RoomService>();
+
+        roomService.Disconnected += OnDisconnected;
+    }
+
+    private void OnDestroy()
+    {
+        if (roomService != null)
+            roomService.Disconnected -= OnDisconnected;
     }
 
     public void SetHost(bool value)
@@ -35,6 +46,13 @@ public class RoomPanel : MenuPanel
     public void SetRoomCode(string roomCode)
     {
         roomCodeText.text = roomCode;
+    }
+
+    public override void Open()
+    {
+        // Affiche tout de suite les joueurs connus, sans attendre la prochaine mise à jour.
+        if (roomService != null && roomService.CurrentLobby != null)
+            SetPlayers(roomService.CurrentLobby.Players);
     }
 
     public void SetPlayers(IReadOnlyList<Player> players)
@@ -76,7 +94,10 @@ public class RoomPanel : MenuPanel
         if (!isHost)
             return;
 
-        ServiceLocator.Get<OnlineGame>().StartGame();
+        string error = ServiceLocator.Get<OnlineGame>().StartGame();
+
+        if (error != null)
+            ErrorPopup.Show(errorPopup, error);
     }
 
     public override void Close()
@@ -86,8 +107,31 @@ public class RoomPanel : MenuPanel
 
     public async void Leave()
     {
-        await ServiceLocator.Get<RoomService>().LeaveRoom();
+        if (leaving)
+            return;
 
-        menuManager.ToggleMenu(mainMenu);
+        leaving = true;
+
+        try
+        {
+            await roomService.LeaveRoom();
+        }
+        catch (System.Exception exception)
+        {
+            // Même en cas d'erreur réseau, on revient au menu : le salon expirera seul.
+            Debug.LogException(exception);
+        }
+        finally
+        {
+            leaving = false;
+            menuManager.ShowMenu(mainMenu);
+        }
+    }
+
+    // L'hôte est parti, le salon a été fermé ou la connexion a été perdue.
+    private void OnDisconnected(string message)
+    {
+        ErrorPopup.Show(errorPopup, message);
+        menuManager.ShowMenu(mainMenu);
     }
 }

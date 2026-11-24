@@ -32,6 +32,13 @@ public class MenuManager : MonoBehaviour
 
     public void CloseAll() => SwitchTo(null);
 
+    // Affiche ce menu, sans le refermer s'il est déjà ouvert (contrairement à ToggleMenu).
+    public void ShowMenu(MenuPanel panel)
+    {
+        if (currentMenu != panel)
+            SwitchTo(panel);
+    }
+
     private void SwitchTo(MenuPanel panel)
     {
         if (switchRoutine != null)
