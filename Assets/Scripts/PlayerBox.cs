@@ -17,6 +17,11 @@ public class PlayerBox : MonoBehaviour
         return inputField.text;
     }
 
+    public void Focus()
+    {
+        UIUtility.Focus(inputField);
+    }
+
     public void DeleteBox()
     {
         setupPlayer.RemovePlayer(this);

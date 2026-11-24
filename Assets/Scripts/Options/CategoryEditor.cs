@@ -61,8 +61,13 @@ public class CategoryEditor : MenuPanel
 
     public void AddBox()
     {
-        AddWord(string.Empty);
+        WordBox wordBox = AddWord(string.Empty);
         addWordBox.transform.SetAsLastSibling();
+
+        if (contentParent is RectTransform content)
+            UIUtility.ScrollToBottom(content);
+
+        wordBox.Focus();
     }
 
     public void DeleteBox(WordBox wordBox)
@@ -140,7 +145,7 @@ public class CategoryEditor : MenuPanel
         categoryHandler.DisplayCategories();
     }
 
-    private void AddWord(string word)
+    private WordBox AddWord(string word)
     {
         WordBox wordBox = Instantiate(
             wordBoxPrefab,
@@ -150,6 +155,8 @@ public class CategoryEditor : MenuPanel
         wordBoxes.Add(wordBox);
         wordBox.SetWord(word);
         wordBox.SetHandler(this);
+
+        return wordBox;
     }
 
     private void ShowError(string message)

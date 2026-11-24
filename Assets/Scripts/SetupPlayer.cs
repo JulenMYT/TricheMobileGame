@@ -19,6 +19,9 @@ public class SetupPlayer : MenuPanel
         PlayerBox player = Instantiate(playerBoxPrefab, gridParent);
         player.Initialize(this);
         playerBoxes.Add(player);
+
+        UIUtility.ScrollToBottom(gridParent);
+        player.Focus();
     }
 
     public void RemovePlayer(PlayerBox player)

@@ -22,6 +22,11 @@ public class WordBox : MonoBehaviour
         return wordField.text;
     }
 
+    public void Focus()
+    {
+        UIUtility.Focus(wordField);
+    }
+
     public void SetWord(string word)
     {
         wordField.text = word;
