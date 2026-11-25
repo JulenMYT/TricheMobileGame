@@ -105,6 +105,7 @@ public static class CustomCategoryManager
             return SaveFailedMessage;
         }
 
+        PersistentFiles.Flush();
         WordsDatabase.Reload();
 
         return null;
@@ -120,6 +121,7 @@ public static class CustomCategoryManager
             return;
 
         File.Delete(path);
+        PersistentFiles.Flush();
 
         CategorySettings.ForgetCategory(categoryName);
         WordsDatabase.Reload();

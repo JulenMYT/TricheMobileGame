@@ -18,10 +18,10 @@ public class RoomService : MonoBehaviour
 
     // Lobby considère un salon inactif après 30 s sans heartbeat de l'hôte :
     // il n'est alors plus possible de le rejoindre.
-    private const int HeartbeatIntervalMs = 15000;
+    private const float HeartbeatInterval = 15f;
 
     // GetLobby est limité à 1 requête par seconde et par joueur : on reste en dessous.
-    private const int RefreshIntervalMs = 1500;
+    private const float RefreshInterval = 1.5f;
 
     // WebSockets sécurisés partout : obligatoire pour WebGL, et Relay exige que
     // l'hôte et les clients utilisent le même type de connexion.
@@ -236,6 +236,13 @@ public class RoomService : MonoBehaviour
     private bool IsSessionActive(int session) =>
         session == sessionId && currentLobby != null;
 
+    // Attente sur la boucle de jeu d'Unity. Task.Delay repose sur des threads,
+    // absents dans un navigateur (WebGL) : il peut ne jamais se terminer.
+    private async Task Wait(float seconds)
+    {
+        await Awaitable.WaitForSecondsAsync(seconds, destroyCancellationToken);
+    }
+
     private async Task HeartbeatRoutine(int session)
     {
         while (IsSessionActive(session))
@@ -249,7 +256,7 @@ public class RoomService : MonoBehaviour
                 Debug.LogWarning($"Heartbeat du salon échoué : {exception.Message}");
             }
 
-            await Task.Delay(HeartbeatIntervalMs);
+            await Wait(HeartbeatInterval);
         }
     }
 
@@ -284,7 +291,7 @@ public class RoomService : MonoBehaviour
                 Debug.LogWarning($"Mise à jour du salon échouée : {exception.Message}");
             }
 
-            await Task.Delay(RefreshIntervalMs);
+            await Wait(RefreshInterval);
         }
     }
 
